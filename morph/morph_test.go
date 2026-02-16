@@ -1244,7 +1244,7 @@ type goldenEntry struct {
 var updateGolden = flag.Bool("update", false, "update golden test file")
 
 func TestGolden(t *testing.T) {
-	data, err := os.ReadFile("testdata/golden.json")
+	data, err := os.ReadFile("../data/golden/morph.json")
 	if err != nil {
 		t.Skipf("golden file not found: %v", err)
 	}
@@ -1267,7 +1267,7 @@ func TestGolden(t *testing.T) {
 			}
 		}
 		out, _ := json.MarshalIndent(entries, "", "  ")
-		if err := os.WriteFile("testdata/golden.json", out, 0644); err != nil {
+		if err := os.WriteFile("../data/golden/morph.json", out, 0644); err != nil {
 			t.Fatalf("write golden file: %v", err)
 		}
 		t.Log("golden file updated")

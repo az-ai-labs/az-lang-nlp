@@ -41,3 +41,4 @@ docs/
 CLAUDE.md
 BACKLOG.md
 smoketest
+data/dictionary/*

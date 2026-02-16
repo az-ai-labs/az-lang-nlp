@@ -21,7 +21,7 @@ type goldenCase struct {
 	WordTokens     []Token  `json:"word_tokens,omitempty"`
 }
 
-const goldenPath = "testdata/golden.json"
+const goldenPath = "../data/golden/tokenizer.json"
 
 func TestGolden(t *testing.T) {
 	if *updateGolden {
@@ -103,7 +103,7 @@ func updateGoldenFile(t *testing.T) {
 		t.Fatalf("writing golden file: %v", err)
 	}
 
-	t.Log("golden file updated, review with: git diff tokenizer/testdata/golden.json")
+	t.Log("golden file updated, review with: git diff data/golden/tokenizer.json")
 }
 
 func compareStringSlice(t *testing.T, label string, want, got []string) {
