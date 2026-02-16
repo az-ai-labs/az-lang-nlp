@@ -83,6 +83,14 @@ linters:
       - path: "tokenizer/sentence\\.go$"
         linters:
           - gocyclo
+      # State-machine functions in morph analyzer are inherently cyclomatic.
+      - path: "morph/fsm\\.go$"
+        linters:
+          - gocyclo
+      # Suffix table is a single large data declaration.
+      - path: "morph/suffixes\\.go$"
+        linters:
+          - funlen
       - linters:
           - gocritic
         text: "unnecessaryDefer:"

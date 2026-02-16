@@ -64,3 +64,9 @@ jobs:
 
       - name: Fuzz sentence tokenizer
         run: go test ./tokenizer/ -fuzz=FuzzSentenceTokens -fuzztime=10s -parallel=1
+
+      - name: Fuzz morph Stem
+        run: go test ./morph/ -fuzz=FuzzStem -fuzztime=10s -parallel=1
+
+      - name: Fuzz morph Analyze
+        run: go test ./morph/ -fuzz=FuzzAnalyze -fuzztime=10s -parallel=1

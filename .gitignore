@@ -10,6 +10,7 @@
 
 # Output
 *.out
+*.prof
 
 # Go workspace
 go.work
@@ -38,4 +39,5 @@ Thumbs.db
 
 docs/
 CLAUDE.md
+BACKLOG.md
 smoketest
