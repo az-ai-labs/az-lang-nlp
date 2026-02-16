@@ -70,6 +70,40 @@ Handles URLs, emails, Azerbaijani abbreviations (Prof., Az.R.), thousand-separat
 
 All functions are safe for concurrent use.
 
+## Morphological Analysis
+
+Decompose inflected Azerbaijani words into stem and suffix chain.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/BarsNLP/barsnlp/morph"
+)
+
+func main() {
+	// Extract stem from inflected word
+	fmt.Println(morph.Stem("kitablarımızdan"))
+	// kitab
+
+	// Full morphological analysis
+	for _, a := range morph.Analyze("kitablarımızdan") {
+		fmt.Println(a)
+	}
+	// kitab[Plural:lar|Poss1Pl:ımız|CaseAbl:dan]
+	// kitab
+
+	// Batch stemming (pairs with tokenizer.Words)
+	fmt.Println(morph.Stems([]string{"evlərdə", "gəlmişdir", "uşaqlar"}))
+	// [ev gəl uşaq]
+}
+```
+
+Uses a table-driven morphotactic state machine with backtracking. Validates vowel harmony, consonant assimilation, and suffix ordering without requiring a dictionary.
+
+All functions are safe for concurrent use.
+
 ## License
 
 MIT
