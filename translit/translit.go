@@ -38,11 +38,11 @@ func CyrillicToLatin(s string) string {
 	b.Grow(len(s))
 
 	for i, r := range s {
-		switch {
-		case r == 'Г' || r == 'г':
+		switch r {
+		case 'Г', 'г':
 			rest := s[i+utf8.RuneLen(r):]
 			b.WriteRune(resolveG(r == 'Г', rest, hasGje))
-		case r == 'Ь' || r == 'ь' || r == 'Ъ' || r == 'ъ':
+		case 'Ь', 'ь', 'Ъ', 'ъ':
 			// Silently removed.
 		default:
 			if lat, ok := cyrToLat[r]; ok {

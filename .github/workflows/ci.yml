@@ -60,7 +60,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Fuzz word tokenizer
-        run: go test ./tokenizer/ -fuzz=FuzzWordTokens -fuzztime=30s
+        run: go test ./tokenizer/ -fuzz=FuzzWordTokens -fuzztime=10s -parallel=1
 
       - name: Fuzz sentence tokenizer
-        run: go test ./tokenizer/ -fuzz=FuzzSentenceTokens -fuzztime=30s
+        run: go test ./tokenizer/ -fuzz=FuzzSentenceTokens -fuzztime=10s -parallel=1

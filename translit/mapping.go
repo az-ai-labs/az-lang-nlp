@@ -75,14 +75,6 @@ var latToCyr = map[rune]rune{
 	'Z': 'З', 'z': 'з',
 }
 
-// backVowels is the set of Cyrillic back vowels for Г/г disambiguation.
-var backVowels = map[rune]bool{
-	'А': true, 'а': true,
-	'О': true, 'о': true,
-	'У': true, 'у': true,
-	'Ы': true, 'ы': true,
-}
-
 // frontVowels is the set of Cyrillic front vowels for Г/г disambiguation.
 var frontVowels = map[rune]bool{
 	'Ә': true, 'ә': true,
