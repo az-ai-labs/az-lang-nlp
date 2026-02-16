@@ -48,14 +48,6 @@ func isBackVowel(r rune) bool {
 	return backVowels[r]
 }
 
-// isFrontVowel reports whether r is an Azerbaijani front vowel.
-// Currently unused but kept for potential future phonology checks.
-//
-//nolint:unused
-func isFrontVowel(r rune) bool {
-	return frontVowels[r]
-}
-
 // isVoiceless reports whether r is a voiceless consonant.
 // Expects lowercase input.
 func isVoiceless(r rune) bool {

@@ -16,6 +16,10 @@ type walker struct {
 // Computed once at init time.
 var terminalStates []fsmState
 
+// minSuffixLen maps each toState to the shortest suffix (in runes) that
+// produces that state. Used for early termination in walk().
+var minSuffixLen map[fsmState]int
+
 func init() {
 	seen := make(map[fsmState]bool)
 	for i := range suffixRules {
@@ -24,6 +28,27 @@ func init() {
 	terminalStates = make([]fsmState, 0, len(seen))
 	for s := range seen {
 		terminalStates = append(terminalStates, s)
+	}
+
+	// Pre-compute rune forms for all suffix surfaces.
+	for i := range suffixRules {
+		rule := &suffixRules[i]
+		rule.surfaceRunes = make([][]rune, len(rule.surfaces))
+		for j, s := range rule.surfaces {
+			rule.surfaceRunes[j] = []rune(s)
+		}
+	}
+
+	// Compute minimum suffix length for each toState.
+	minSuffixLen = make(map[fsmState]int)
+	for i := range suffixRules {
+		rule := &suffixRules[i]
+		for _, sr := range rule.surfaceRunes {
+			l := len(sr)
+			if prev, ok := minSuffixLen[rule.toState]; !ok || l < prev {
+				minSuffixLen[rule.toState] = l
+			}
+		}
 	}
 }
 
@@ -88,14 +113,19 @@ func (w *walker) walk(pos int, state fsmState, morphemes []Morpheme, depth int) 
 		return
 	}
 
+	// Early termination: remaining runes too short for any suffix producing this state.
+	if minLen, ok := minSuffixLen[state]; ok && pos < minLen {
+		return
+	}
+
 	for ri := range suffixRules {
 		rule := &suffixRules[ri]
 		if rule.toState != state {
 			continue
 		}
 
-		for _, surface := range rule.surfaces {
-			surfRunes := []rune(surface)
+		for si, surface := range rule.surfaces {
+			surfRunes := rule.surfaceRunes[si]
 			surfLen := len(surfRunes)
 			if surfLen > pos {
 				continue

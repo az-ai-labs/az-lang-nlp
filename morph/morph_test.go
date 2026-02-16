@@ -104,55 +104,13 @@ func TestIsBackVowel(t *testing.T) {
 	}
 }
 
-func TestIsFrontVowel(t *testing.T) {
-	tests := []struct {
-		name string
-		r    rune
-		want bool
-	}{
-		// -- Front vowels --
-		{"e", 'e', true},
-		{"E", 'E', true},
-		{"ə", 'ə', true},
-		{"Ə", 'Ə', true},
-		{"i", 'i', true},
-		{"İ", 'İ', true},
-		{"ö", 'ö', true},
-		{"Ö", 'Ö', true},
-		{"ü", 'ü', true},
-		{"Ü", 'Ü', true},
-
-		// -- Back vowels --
-		{"a", 'a', false},
-		{"A", 'A', false},
-		{"ı", 'ı', false},
-		{"I", 'I', false},
-		{"o", 'o', false},
-		{"O", 'O', false},
-		{"u", 'u', false},
-		{"U", 'U', false},
-
-		// -- Consonants --
-		{"b", 'b', false},
-		{"k", 'k', false},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := isFrontVowel(tt.r); got != tt.want {
-				t.Errorf("isFrontVowel(%q) = %v, want %v", tt.r, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestBackFrontMutualExclusivity(t *testing.T) {
 	vowels := []rune{'a', 'e', 'ə', 'ı', 'i', 'o', 'ö', 'u', 'ü',
 		'A', 'E', 'Ə', 'I', 'İ', 'O', 'Ö', 'U', 'Ü'}
 
 	for _, v := range vowels {
 		isBack := isBackVowel(v)
-		isFront := isFrontVowel(v)
+		isFront := frontVowels[v]
 
 		if isBack && isFront {
 			t.Errorf("vowel %q is both back and front", v)

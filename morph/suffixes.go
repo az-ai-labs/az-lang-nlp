@@ -31,11 +31,12 @@ const (
 // suffixRule describes one suffix (or group of allomorphs) with its grammatical
 // tag, valid source/target states in the FSM, and vowel harmony class.
 type suffixRule struct {
-	surfaces   []string    // all surface allomorphs, longest first
-	tag        MorphTag    // grammatical tag
-	fromStates []fsmState  // valid source states
-	toState    fsmState    // target state after match
-	harmony    harmonyKind // harmony validation type
+	surfaces     []string    // all surface allomorphs, longest first
+	surfaceRunes [][]rune    // pre-computed rune slices for surfaces
+	tag          MorphTag    // grammatical tag
+	fromStates   []fsmState  // valid source states
+	toState      fsmState    // target state after match
+	harmony      harmonyKind // harmony validation type
 }
 
 // suffixRules is the core suffix table for Azerbaijani morphological analysis.
