@@ -273,6 +273,18 @@ func TestWordTokens(t *testing.T) {
 			{Text: "\u0259", Start: 0, End: 2, Type: Word},
 		}},
 
+		// -- Non-ASCII Unicode digits (must not hang) --
+
+		{"mathematical digit U+1D7E2 is symbol", "\U0001D7E2", []Token{
+			{Text: "\U0001D7E2", Start: 0, End: 4, Type: Symbol},
+		}},
+		{"Arabic-Indic digit U+0660 is symbol", "\u0660", []Token{
+			{Text: "\u0660", Start: 0, End: 2, Type: Symbol},
+		}},
+		{"non-ASCII digit absorbed into word", "a\U0001D7E2b", []Token{
+			{Text: "a\U0001D7E2b", Start: 0, End: 6, Type: Word},
+		}},
+
 		// -- Malformed UTF-8 --
 
 		{"malformed UTF-8 produces symbol tokens", "\xff\xfe", []Token{

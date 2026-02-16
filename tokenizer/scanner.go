@@ -58,8 +58,10 @@ func wordTokens(s string) []Token {
 			continue
 		}
 
-		// Digits: scan a number token with possible thousand-separator dots and decimal comma
-		if unicode.IsDigit(r) {
+		// Digits: scan a number token with possible thousand-separator dots and decimal comma.
+		// Only ASCII digits enter scanNumber — non-ASCII Unicode digits (e.g. 𝟢 U+1D7E2)
+		// fall through to Symbol, since scanNumber only handles ASCII digit bytes internally.
+		if r >= '0' && r <= '9' {
 			tok := scanNumber(s, i)
 			tokens = append(tokens, tok)
 			i = tok.End

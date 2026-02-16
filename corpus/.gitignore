@@ -1,0 +1,6 @@
+# Corpus data files are too large for git
+*.txt
+*.xml
+*.bz2
+*.json
+!.gitignore
