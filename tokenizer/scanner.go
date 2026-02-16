@@ -93,14 +93,7 @@ func wordTokens(s string) []Token {
 			continue
 		}
 
-		// Symbol: everything else
-		if unicode.IsSymbol(r) {
-			tokens = append(tokens, Token{Text: s[i : i+size], Start: i, End: i + size, Type: Symbol})
-			i += size
-			continue
-		}
-
-		// Fallback: treat as Symbol
+		// Fallback: treat unclassified runes as Symbol
 		tokens = append(tokens, Token{Text: s[i : i+size], Start: i, End: i + size, Type: Symbol})
 		i += size
 	}
@@ -114,11 +107,15 @@ func wordTokens(s string) []Token {
 func scanURL(s string, pos int) (end int, ok bool) {
 	rest := s[pos:]
 	prefix := ""
-	lower := strings.ToLower(rest)
-	if strings.HasPrefix(lower, "https://") {
-		prefix = "https://"
-	} else if strings.HasPrefix(lower, "http://") {
-		prefix = "http://"
+	if len(rest) >= 8 && (rest[0] == 'h' || rest[0] == 'H') &&
+		(rest[1] == 't' || rest[1] == 'T') &&
+		(rest[2] == 't' || rest[2] == 'T') &&
+		(rest[3] == 'p' || rest[3] == 'P') {
+		if (rest[4] == 's' || rest[4] == 'S') && rest[5] == ':' && rest[6] == '/' && rest[7] == '/' {
+			prefix = "https://"
+		} else if rest[4] == ':' && rest[5] == '/' && rest[6] == '/' {
+			prefix = "http://"
+		}
 	}
 	if prefix == "" {
 		return 0, false
@@ -169,6 +166,14 @@ func scanEmail(s string, atPos int) (start, end int, ok bool) {
 		} else {
 			break
 		}
+	}
+	if start == atPos {
+		return 0, 0, false
+	}
+
+	// Skip leading dots — RFC 5321 disallows dots as the first character.
+	for start < atPos && s[start] == '.' {
+		start++
 	}
 	if start == atPos {
 		return 0, 0, false

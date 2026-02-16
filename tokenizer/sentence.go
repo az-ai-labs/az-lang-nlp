@@ -21,7 +21,7 @@ var abbreviations = map[string]bool{
 // Adjacent tokens cover the entire input without gaps or overlaps:
 // concatenating all Token.Text values reconstructs s exactly.
 func sentenceTokens(s string) []Token {
-	var tokens []Token
+	tokens := make([]Token, 0, len(s)/40+1)
 	sentStart := 0 // byte offset where the current sentence begins
 
 	i := 0

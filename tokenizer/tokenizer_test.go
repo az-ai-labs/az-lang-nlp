@@ -3,6 +3,7 @@ package tokenizer
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/BarsNLP/barsnlp/translit"
@@ -227,6 +228,22 @@ func TestWordTokens(t *testing.T) {
 			{Text: ".", Start: 12, End: 13, Type: Punctuation},
 		}},
 
+		// -- Leading-dot email rejection --
+
+		{"leading dot email rejected", ".user@mail.az", []Token{
+			{Text: ".", Start: 0, End: 1, Type: Punctuation},
+			{Text: "user@mail.az", Start: 1, End: 13, Type: Email},
+		}},
+
+		// -- Bare protocol edge cases --
+
+		{"bare http protocol only", "http://", []Token{
+			{Text: "http", Start: 0, End: 4, Type: Word},
+			{Text: ":", Start: 4, End: 5, Type: Punctuation},
+			{Text: "/", Start: 5, End: 6, Type: Punctuation},
+			{Text: "/", Start: 6, End: 7, Type: Punctuation},
+		}},
+
 		// -- Mixed content --
 
 		{"mixed content sentence", "Prof. \u018eliyev 1.000 manat \u00f6d\u0259di.", []Token{
@@ -413,6 +430,12 @@ func TestSentenceTokens(t *testing.T) {
 			{Text: "O, prof.", Start: 0, End: 8, Type: Sentence},
 		}},
 
+		// -- Single newline does not split --
+
+		{"single newline no split", "Birinci\n\u0130kinci", []Token{
+			{Text: "Birinci\n\u0130kinci", Start: 0, End: 15, Type: Sentence},
+		}},
+
 		// -- Empty string --
 
 		{"empty string", "", nil},
@@ -591,4 +614,53 @@ func ExampleSentences() {
 	fmt.Println(Sentences("Birinci. \u0130kinci."))
 	// Output:
 	// [Birinci.  İkinci.]
+}
+
+// ---------------------------------------------------------------------------
+// Fuzz tests
+// ---------------------------------------------------------------------------
+
+func FuzzWordTokens(f *testing.F) {
+	f.Add("Salam, d\u00fcnya!")
+	f.Add("user@mail.az")
+	f.Add("https://gov.az")
+	f.Add("1.000.000,50")
+	f.Add("")
+	f.Add("\xff\xfe")
+	f.Add("h h h h h h h h")
+	f.Add(".user@domain.com")
+	f.Fuzz(func(t *testing.T, s string) {
+		tokens := WordTokens(s)
+		verifyInvariants(t, s, tokens)
+	})
+}
+
+func FuzzSentenceTokens(f *testing.F) {
+	f.Add("Birinci. \u0130kinci.")
+	f.Add("Prof. \u018eliyev g\u0259ldi.")
+	f.Add("Ola bil\u0259r... B\u0259lk\u0259.")
+	f.Add("")
+	f.Add("Az.R. qanunu.")
+	f.Fuzz(func(t *testing.T, s string) {
+		tokens := SentenceTokens(s)
+		verifyInvariants(t, s, tokens)
+	})
+}
+
+// ---------------------------------------------------------------------------
+// Concurrent safety
+// ---------------------------------------------------------------------------
+
+func TestConcurrentSafety(t *testing.T) {
+	input := "Prof. \u018eliyev 1.000 manat \u00f6d\u0259di. user@mail.az https://gov.az"
+	var wg sync.WaitGroup
+	for range 100 {
+		wg.Go(func() {
+			WordTokens(input)
+			Words(input)
+			SentenceTokens(input)
+			Sentences(input)
+		})
+	}
+	wg.Wait()
 }
