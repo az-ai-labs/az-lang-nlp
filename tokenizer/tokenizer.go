@@ -25,6 +25,10 @@ package tokenizer
 
 import "fmt"
 
+// wordsPerTokenEstimate is the estimated ratio of total tokens to word tokens,
+// used to pre-allocate the words slice in the Words convenience function.
+const wordsPerTokenEstimate = 2
+
 // TokenType classifies a token.
 type TokenType int
 
@@ -95,7 +99,7 @@ func Words(s string) []string {
 		return nil
 	}
 	tokens := wordTokens(s)
-	words := make([]string, 0, len(tokens)/2)
+	words := make([]string, 0, len(tokens)/wordsPerTokenEstimate)
 	for _, t := range tokens {
 		if t.Type == Word {
 			words = append(words, t.Text)

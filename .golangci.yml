@@ -1,0 +1,111 @@
+version: "2"
+
+run:
+  timeout: 3m
+  tests: false
+  modules-download-mode: readonly
+
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    - funlen
+    - goconst
+    - gocritic
+    - gocyclo
+    - goprintffuncname
+    - gosec
+    - govet
+    - ineffassign
+    - lll
+    - mnd
+    - nakedret
+    - noctx
+    - nolintlint
+    - revive
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+  settings:
+    dupl:
+      threshold: 200
+    funlen:
+      lines: 200
+      statements: 120
+    goconst:
+      min-len: 2
+      min-occurrences: 2
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+      disabled-checks:
+        - dupImport
+        - ifElseChain
+        - octalLiteral
+        - whyNoLint
+        - wrapperFunc
+        - typeAssertChain
+    gocyclo:
+      min-complexity: 25
+    lll:
+      line-length: 180
+    mnd:
+      checks:
+        - argument
+        - case
+        - condition
+        - return
+    nolintlint:
+      allow-unused: false
+      require-explanation: false
+      require-specific: false
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - mnd
+          - dupl
+          - lll
+      # State-machine functions in tokenizer are inherently cyclomatic.
+      - path: "tokenizer/scanner\\.go$"
+        linters:
+          - gocyclo
+      - path: "tokenizer/sentence\\.go$"
+        linters:
+          - gocyclo
+      - linters:
+          - gocritic
+        text: "unnecessaryDefer:"
+      - linters:
+          - gocritic
+        text: "unnamedResult:"
+      - linters:
+          - gocritic
+        text: "singleCaseSwitch:"
+      - linters:
+          - exhaustive
+        text: "missing cases in switch"
+      - linters:
+          - revive
+        text: "exported"
+      - linters:
+          - revive
+        text: "package-comments"
+      - linters:
+          - gocritic
+        text: "hugeParam:"
+
+formatters:
+  enable:
+    - gofmt
+    - goimports

@@ -11,10 +11,10 @@ import (
 // "az." is included to support greedy forward matching to "az.r.".
 var abbreviations = map[string]bool{
 	"prof.": true, "dos.": true, "ak.": true, "dr.": true,
-	"az.":   true, "az.r.": true, "ar.": true,
-	"b.e.":  true, "m.e.": true, "e.ə.": true,
-	"vb.":   true,
-	"km.":   true, "kq.": true, "sm.": true, "min.": true,
+	"az.": true, "az.r.": true, "ar.": true,
+	"b.e.": true, "m.e.": true, "e.ə.": true,
+	"vb.": true,
+	"km.": true, "kq.": true, "sm.": true, "min.": true,
 }
 
 // sentenceTokens splits s into sentence-level tokens.
@@ -167,7 +167,7 @@ func isAbbreviation(s string, dotPos int) bool {
 	// suppress the sentence break.
 	if lower == "s" {
 		prevWord, _ := wordBefore(s, wordStart)
-		if strings.ToLower(prevWord) == "və" {
+		if strings.EqualFold(prevWord, "və") {
 			return true
 		}
 	}
@@ -186,7 +186,7 @@ func isAbbreviation(s string, dotPos int) bool {
 // It returns true once no further extension is possible, confirming the abbreviation.
 // For example: prefix="az.", pos points to text after the dot.
 // If next chars are "r.", it checks "az.r." — if that is also an abbreviation, recurse.
-func greedyAbbreviation(s string, prefix string, pos int) bool {
+func greedyAbbreviation(s, prefix string, pos int) bool {
 	// Try to read the next word and dot to extend the abbreviation.
 	// The next segment must be: word + "." immediately adjacent (no whitespace).
 	if pos >= len(s) {
