@@ -39,8 +39,6 @@ func init() {
 // isKnownStem reports whether s is a known dictionary stem.
 // Expects lowercase Latin input.
 // Designed for soft ranking in fsm.go walk() base case, not hard filtering.
-//
-//nolint:unused // called from tests; integrated into FSM in PR #2
 func isKnownStem(s string) bool {
 	if s == "" {
 		return false

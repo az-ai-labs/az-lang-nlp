@@ -17,7 +17,7 @@
 //
 // Known limitations (v1.0):
 //
-//   - No dictionary lookup. Cannot distinguish homographic stems.
+//   - Dictionary lookup is soft (ranking only). Cannot resolve all homographic stems.
 //   - The -t causative suffix may produce false positives.
 //   - k/q restoration at morpheme boundaries is best-effort.
 //   - Reciprocal -ış/-iş/-uş/-üş may over-stem verb roots like danış-.
@@ -323,9 +323,24 @@ func Stem(word string) string {
 	}
 
 	results := Analyze(word)
-	// Prefer analyses with morphemes (suffixed) over bare-stem.
-	// Results are sorted by morpheme count DESC, so first suffixed
-	// analysis is at index 0 if any exist.
+
+	// Three-pass dictionary-aware stem selection.
+	wordKnown := isKnownStem(toLower(word))
+	// Pass 1: prefer analysis with morphemes AND known dictionary stem,
+	// but skip when the whole word is also known (avoids stripping real
+	// stems like ana->an where both are dictionary entries).
+	if !wordKnown {
+		for _, a := range results {
+			if len(a.Morphemes) > 0 && isKnownStem(toLower(a.Stem)) {
+				return a.Stem
+			}
+		}
+	}
+	// Pass 2: if the whole word is a known dictionary stem, don't strip.
+	if wordKnown {
+		return word
+	}
+	// Pass 3: fall back to any analysis with morphemes (pre-dictionary behavior).
 	for _, a := range results {
 		if len(a.Morphemes) > 0 {
 			return a.Stem

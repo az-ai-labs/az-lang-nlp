@@ -31,7 +31,7 @@
   },
   {
     "word": "oğlan",
-    "stem": "oğl",
+    "stem": "oğlan",
     "morphemes": [
       {
         "surface": "an",
@@ -41,7 +41,7 @@
   },
   {
     "word": "dəniz",
-    "stem": "də",
+    "stem": "dəniz",
     "morphemes": [
       {
         "surface": "niz",
@@ -51,7 +51,7 @@
   },
   {
     "word": "gün",
-    "stem": "gü",
+    "stem": "gün",
     "morphemes": [
       {
         "surface": "n",
@@ -61,7 +61,7 @@
   },
   {
     "word": "gecə",
-    "stem": "gec",
+    "stem": "gecə",
     "morphemes": [
       {
         "surface": "ə",
@@ -106,7 +106,7 @@
   },
   {
     "word": "sevgi",
-    "stem": "sevg",
+    "stem": "sevgi",
     "morphemes": [
       {
         "surface": "i",
@@ -320,7 +320,7 @@
   },
   {
     "word": "gülüm",
-    "stem": "gü",
+    "stem": "gül",
     "morphemes": [
       {
         "surface": "lü",
@@ -334,7 +334,7 @@
   },
   {
     "word": "gülün",
-    "stem": "gü",
+    "stem": "gül",
     "morphemes": [
       {
         "surface": "lü",
@@ -348,7 +348,7 @@
   },
   {
     "word": "gülü",
-    "stem": "gü",
+    "stem": "gül",
     "morphemes": [
       {
         "surface": "lü",
@@ -358,7 +358,7 @@
   },
   {
     "word": "oğlum",
-    "stem": "oğ",
+    "stem": "oğlu",
     "morphemes": [
       {
         "surface": "lu",
@@ -516,7 +516,7 @@
   },
   {
     "word": "yolun",
-    "stem": "yo",
+    "stem": "yol",
     "morphemes": [
       {
         "surface": "lu",
@@ -530,7 +530,7 @@
   },
   {
     "word": "yola",
-    "stem": "yo",
+    "stem": "yola",
     "morphemes": [
       {
         "surface": "la",
@@ -540,7 +540,7 @@
   },
   {
     "word": "yolu",
-    "stem": "yo",
+    "stem": "yol",
     "morphemes": [
       {
         "surface": "lu",
@@ -570,7 +570,7 @@
   },
   {
     "word": "yolla",
-    "stem": "yol",
+    "stem": "yolla",
     "morphemes": [
       {
         "surface": "la",
@@ -624,7 +624,7 @@
   },
   {
     "word": "işçi",
-    "stem": "iş",
+    "stem": "işçi",
     "morphemes": [
       {
         "surface": "çi",
@@ -634,7 +634,7 @@
   },
   {
     "word": "işsiz",
-    "stem": "iş",
+    "stem": "işsiz",
     "morphemes": [
       {
         "surface": "siz",
@@ -664,7 +664,7 @@
   },
   {
     "word": "gözlük",
-    "stem": "göz",
+    "stem": "gözlük",
     "morphemes": [
       {
         "surface": "lük",
@@ -1248,7 +1248,7 @@
   },
   {
     "word": "gələcək",
-    "stem": "gəl",
+    "stem": "gələcək",
     "morphemes": [
       {
         "surface": "əcək",
@@ -1268,7 +1268,7 @@
   },
   {
     "word": "gəlir",
-    "stem": "gəl",
+    "stem": "gəlir",
     "morphemes": [
       {
         "surface": "ir",
@@ -1336,7 +1336,7 @@
   },
   {
     "word": "gələn",
-    "stem": "gəl",
+    "stem": "gələn",
     "morphemes": [
       {
         "surface": "ən",
@@ -1346,7 +1346,7 @@
   },
   {
     "word": "yazan",
-    "stem": "yaz",
+    "stem": "yazan",
     "morphemes": [
       {
         "surface": "an",
@@ -1502,7 +1502,7 @@
   },
   {
     "word": "müəllimdir",
-    "stem": "müəl",
+    "stem": "müəllim",
     "morphemes": [
       {
         "surface": "li",
@@ -1544,7 +1544,7 @@
   },
   {
     "word": "yaxşıdır",
-    "stem": "yaxş",
+    "stem": "yaxşı",
     "morphemes": [
       {
         "surface": "ı",
@@ -1578,7 +1578,7 @@
   },
   {
     "word": "doğrudur",
-    "stem": "doğr",
+    "stem": "doğru",
     "morphemes": [
       {
         "surface": "u",
@@ -1634,7 +1634,7 @@
   },
   {
     "word": "müəllimdirmi",
-    "stem": "müəl",
+    "stem": "müəllim",
     "morphemes": [
       {
         "surface": "li",
@@ -1693,7 +1693,7 @@
   },
   {
     "word": "ürəyi",
-    "stem": "ürəy",
+    "stem": "ürək",
     "morphemes": [
       {
         "surface": "i",
@@ -1703,7 +1703,7 @@
   },
   {
     "word": "uşağı",
-    "stem": "uşağ",
+    "stem": "uşaq",
     "morphemes": [
       {
         "surface": "ı",
@@ -1713,7 +1713,7 @@
   },
   {
     "word": "çiçəyi",
-    "stem": "çiçəy",
+    "stem": "çiçək",
     "morphemes": [
       {
         "surface": "i",
@@ -1723,7 +1723,7 @@
   },
   {
     "word": "ürəyim",
-    "stem": "ürəy",
+    "stem": "ürək",
     "morphemes": [
       {
         "surface": "im",
@@ -1733,7 +1733,7 @@
   },
   {
     "word": "uşağım",
-    "stem": "uşağ",
+    "stem": "uşaq",
     "morphemes": [
       {
         "surface": "ım",
@@ -1743,7 +1743,7 @@
   },
   {
     "word": "ürəyə",
-    "stem": "ürə",
+    "stem": "ürəyə",
     "morphemes": [
       {
         "surface": "yə",
@@ -1753,7 +1753,7 @@
   },
   {
     "word": "uşağa",
-    "stem": "uşağ",
+    "stem": "uşaq",
     "morphemes": [
       {
         "surface": "a",
@@ -1763,7 +1763,7 @@
   },
   {
     "word": "çiçəyə",
-    "stem": "çiçə",
+    "stem": "çiçək",
     "morphemes": [
       {
         "surface": "yə",
@@ -1793,7 +1793,7 @@
   },
   {
     "word": "qələmdə",
-    "stem": "qələ",
+    "stem": "qələm",
     "morphemes": [
       {
         "surface": "m",
@@ -1807,7 +1807,7 @@
   },
   {
     "word": "qələmdən",
-    "stem": "qələ",
+    "stem": "qələm",
     "morphemes": [
       {
         "surface": "m",
@@ -1821,7 +1821,7 @@
   },
   {
     "word": "ana",
-    "stem": "an",
+    "stem": "ana",
     "morphemes": [
       {
         "surface": "a",
@@ -1831,7 +1831,7 @@
   },
   {
     "word": "masa",
-    "stem": "ma",
+    "stem": "masa",
     "morphemes": [
       {
         "surface": "sa",
@@ -1846,7 +1846,7 @@
   },
   {
     "word": "xəbər",
-    "stem": "xəb",
+    "stem": "xəbər",
     "morphemes": [
       {
         "surface": "ər",
@@ -1856,7 +1856,7 @@
   },
   {
     "word": "nəfər",
-    "stem": "nəf",
+    "stem": "nəfər",
     "morphemes": [
       {
         "surface": "ər",
@@ -1866,7 +1866,7 @@
   },
   {
     "word": "mənzil",
-    "stem": "mənz",
+    "stem": "mənzil",
     "morphemes": [
       {
         "surface": "il",
@@ -1876,7 +1876,7 @@
   },
   {
     "word": "pəncərə",
-    "stem": "pəncər",
+    "stem": "pəncərə",
     "morphemes": [
       {
         "surface": "ə",
@@ -1886,7 +1886,7 @@
   },
   {
     "word": "küçə",
-    "stem": "küç",
+    "stem": "küçə",
     "morphemes": [
       {
         "surface": "ə",
@@ -1896,7 +1896,7 @@
   },
   {
     "word": "meşə",
-    "stem": "meş",
+    "stem": "meşə",
     "morphemes": [
       {
         "surface": "ə",
@@ -1911,7 +1911,7 @@
   },
   {
     "word": "xalça",
-    "stem": "xalç",
+    "stem": "xalça",
     "morphemes": [
       {
         "surface": "a",
@@ -1921,7 +1921,7 @@
   },
   {
     "word": "paltar",
-    "stem": "pal",
+    "stem": "paltar",
     "morphemes": [
       {
         "surface": "t",
@@ -1940,7 +1940,7 @@
   },
   {
     "word": "bacı",
-    "stem": "bac",
+    "stem": "bacı",
     "morphemes": [
       {
         "surface": "ı",
@@ -1950,7 +1950,7 @@
   },
   {
     "word": "dayı",
-    "stem": "day",
+    "stem": "dayı",
     "morphemes": [
       {
         "surface": "ı",
@@ -1960,7 +1960,7 @@
   },
   {
     "word": "nənə",
-    "stem": "nə",
+    "stem": "nənə",
     "morphemes": [
       {
         "surface": "n",
@@ -1974,7 +1974,7 @@
   },
   {
     "word": "bala",
-    "stem": "ba",
+    "stem": "bala",
     "morphemes": [
       {
         "surface": "la",
@@ -1984,7 +1984,7 @@
   },
   {
     "word": "alma",
-    "stem": "al",
+    "stem": "alma",
     "morphemes": [
       {
         "surface": "m",
@@ -1998,7 +1998,7 @@
   },
   {
     "word": "çanta",
-    "stem": "çant",
+    "stem": "çanta",
     "morphemes": [
       {
         "surface": "a",
@@ -2008,7 +2008,7 @@
   },
   {
     "word": "lampa",
-    "stem": "lamp",
+    "stem": "lampa",
     "morphemes": [
       {
         "surface": "a",
@@ -2276,7 +2276,7 @@
   },
   {
     "word": "demişsən",
-    "stem": "dem",
+    "stem": "de",
     "morphemes": [
       {
         "surface": "iş",

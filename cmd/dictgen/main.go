@@ -100,6 +100,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	filterInflected(seen)
+
 	lines := make([]string, 0, len(seen))
 	for key := range seen {
 		lines = append(lines, key)
@@ -275,4 +277,80 @@ func toLower(s string) string {
 		b.WriteRune(azLower(r))
 	}
 	return b.String()
+}
+
+// filterInflected removes noun entries that are inflected forms of other nouns.
+// An entry is removed if stripping a common suffix yields another noun in the set.
+// Also handles consonant restoration (k↔y, q↔ğ) before vowel suffixes.
+// This prevents the dictionary from containing kitablar, evlər, ürəyi, etc.
+// alongside their base forms kitab, ev, ürək.
+func filterInflected(seen map[string]struct{}) {
+	// Suffixes removable by plain stripping.
+	plainSuffixes := []string{
+		"lar", "lər",
+		"ları", "ləri",
+		"da", "də", "ta", "tə",
+		"dan", "dən", "tan", "tən",
+	}
+	// Suffixes that may co-occur with k→y / q→ğ consonant alternation.
+	// Only applied when the remaining stem ends in y or ğ.
+	restoreSuffixes := []string{
+		"i", "ı", "u", "ü",
+		"in", "ın", "un", "ün",
+	}
+
+	var toDelete []string
+	for key := range seen {
+		if key[0] != 'N' {
+			continue
+		}
+		lemma := key[1:]
+		filtered := false
+
+		for _, suf := range plainSuffixes {
+			if !strings.HasSuffix(lemma, suf) {
+				continue
+			}
+			stem := lemma[:len(lemma)-len(suf)]
+			if len([]rune(stem)) < minLemmaRunes {
+				continue
+			}
+			if _, ok := seen["N"+stem]; ok {
+				toDelete = append(toDelete, key)
+				filtered = true
+				break
+			}
+		}
+		if filtered {
+			continue
+		}
+
+		// Consonant restoration: ürəyi → ürək (y→k), otağı → otaq (ğ→q).
+		for _, suf := range restoreSuffixes {
+			if !strings.HasSuffix(lemma, suf) {
+				continue
+			}
+			stem := lemma[:len(lemma)-len(suf)]
+			runes := []rune(stem)
+			if len(runes) < minLemmaRunes {
+				continue
+			}
+			switch runes[len(runes)-1] {
+			case 'y':
+				runes[len(runes)-1] = 'k'
+			case '\u011F': // ğ
+				runes[len(runes)-1] = 'q'
+			default:
+				continue
+			}
+			if _, ok := seen["N"+string(runes)]; ok {
+				toDelete = append(toDelete, key)
+				filtered = true
+				break
+			}
+		}
+	}
+	for _, key := range toDelete {
+		delete(seen, key)
+	}
 }

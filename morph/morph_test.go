@@ -655,11 +655,9 @@ func TestStem(t *testing.T) {
 		{"verb yazdılar", "yazdılar", "yaz"},
 
 		// -- Copula on noun --
-		// NOTE: müəllimdir currently stems to "müəl" because the FSM finds
-		// a deeper analysis (DerivPoss:li + Poss1Sg:m + Copula:dir). This is
-		// a known limitation without a dictionary. We test that the analysis
-		// set contains the correct parse in TestAnalyzeSuffixCategories.
-		{"copula müəllimdir", "müəllimdir", "müəl"},
+		// Dictionary-aware ranking picks müəllim (known stem) over the
+		// deeper but incorrect müəl (DerivPoss:li + Poss1Sg:m + Copula:dir).
+		{"copula müəllimdir", "müəllimdir", "müəllim"},
 
 		// -- Derivational: agent --
 		{"deriv kitabçı", "kitabçı", "kitab"},
@@ -1018,24 +1016,19 @@ func TestCasePreservation(t *testing.T) {
 
 func TestOverStemmingRegression(t *testing.T) {
 	tests := []struct {
-		word     string
-		want     string
-		knownBad bool // true if over-stemming is a known Stage 1 limitation
+		word string
+		want string
 	}{
-		// "ana" gets over-stemmed to "an" (strips -a as dative) -- known limitation
-		{"ana", "ana", true},
-		// "baba" gets over-stemmed to "bab" -- known limitation
-		{"baba", "baba", true},
+		{"ana", "ana"},
+		{"baba", "baba"},
+		{"gecə", "gecə"},
+		{"sevgi", "sevgi"},
+		{"alma", "alma"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.word, func(t *testing.T) {
-			got := Stem(tt.word)
-			if got != tt.want {
-				if tt.knownBad {
-					t.Skipf("KNOWN LIMITATION: Stem(%q) = %q, want %q (no dictionary to prevent over-stemming)",
-						tt.word, got, tt.want)
-				}
+			if got := Stem(tt.word); got != tt.want {
 				t.Errorf("Stem(%q) = %q, want %q", tt.word, got, tt.want)
 			}
 		})
@@ -1047,26 +1040,19 @@ func TestOverStemmingRegression(t *testing.T) {
 // ---------------------------------------------------------------------------
 
 func TestPersonSuffixFalsePositives(t *testing.T) {
-	// After removing initial from verb person suffix fromStates,
-	// these words should no longer be over-stemmed by person markers.
+	// These words must not be over-stemmed by person suffix markers.
 	tests := []struct {
-		word     string
-		desc     string
-		knownBad bool
+		word string
+		desc string
 	}{
-		{"dəniz", "should not strip -niz as Pers2Pl", true},
-		{"gün", "should not strip -n as Pers2Sg", true},
-		{"ürək", "should not strip -k as Pers1Pl", false},
+		{"dəniz", "should not strip -niz as Pers2Pl"},
+		{"gün", "should not strip -n as Pers2Sg"},
+		{"ürək", "should not strip -k as Pers1Pl"},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.word, func(t *testing.T) {
-			got := Stem(tt.word)
-			if got != tt.word {
-				if tt.knownBad {
-					t.Skipf("KNOWN LIMITATION: Stem(%q) = %q, want %q (%s) - requires dictionary",
-						tt.word, got, tt.word, tt.desc)
-				}
+			if got := Stem(tt.word); got != tt.word {
 				t.Errorf("Stem(%q) = %q, want %q (%s)",
 					tt.word, got, tt.word, tt.desc)
 			}
