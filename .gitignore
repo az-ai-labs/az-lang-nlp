@@ -40,7 +40,7 @@ Thumbs.db
 docs/
 CLAUDE.md
 BACKLOG.md
-smoketest
+/smoketest
 
 *.jsonl
 *.pdf
