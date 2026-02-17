@@ -88,15 +88,16 @@ func main() {
 	// kitab
 
 	// Full morphological analysis
-	for _, a := range morph.Analyze("kitablarımızdan") {
+	for _, a := range morph.Analyze("kitablar") {
 		fmt.Println(a)
 	}
-	// kitab[Plural:lar|Poss1Pl:ımız|CaseAbl:dan]
-	// kitab
+	// kitab[Plural:lar]
+	// kitabl[TenseAorist:ar]
+	// kitablar
 
 	// Batch stemming (pairs with tokenizer.Words)
-	fmt.Println(morph.Stems([]string{"evlərdə", "gəlmişdir", "uşaqlar"}))
-	// [ev gəl uşaq]
+	fmt.Println(morph.Stems([]string{"kitablarımızdan", "evlərdə", "gəlmişdir"}))
+	// [kitab ev gəl]
 }
 ```
 

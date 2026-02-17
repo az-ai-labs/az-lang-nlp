@@ -15,16 +15,17 @@
 //
 // All functions are safe for concurrent use by multiple goroutines.
 //
-// Known limitations (v1.0):
+// Known limitations:
 //
-//   - Dictionary lookup is soft (ranking only). Cannot resolve all homographic stems.
-//   - The -t causative suffix may produce false positives.
-//   - k/q restoration at morpheme boundaries is best-effort.
-//   - Reciprocal -ış/-iş/-uş/-üş may over-stem verb roots like danış-.
-//   - Vowel dropping is restored via dictionary lookup (oğlu → oğul).
-//     Only works for stems present in the dictionary.
-//   - Azerbaijani Latin only. Use translit.CyrillicToLatin for Cyrillic input.
-//   - Input is expected in NFC Unicode normalization form.
+//   - Dictionary lookup is soft (ranking only). Unknown stems fall back
+//     to rule-based analysis which may over-stem.
+//   - Vowel drop restoration requires the stem to be in the dictionary.
+//   - oxu- class verbs absorb buffer -y- into the stem (oxuy-).
+//   - Morpheme tagging may prefer deeper parses over correct ones
+//     when multiple analyses tie (e.g. oxuyursan VoiceCaus vs TensePresent).
+//
+// Input must be Azerbaijani Latin in NFC form.
+// Use translit.CyrillicToLatin to convert Cyrillic input.
 package morph
 
 import (
