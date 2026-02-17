@@ -14,6 +14,9 @@ func TestIsKnownStem(t *testing.T) {
 		{"noun kitab", "kitab", true},
 		{"verb gəl", "gəl", true},
 		{"adj gözəl", "gözəl", true},
+		{"short stem ev", "ev", true},
+		{"short stem su", "su", true},
+		{"prefix of real word", "kita", false},
 		{"nonexistent", "xyznonexistent", false},
 		{"empty", "", false},
 		{"ana", "ana", true},
@@ -42,6 +45,7 @@ func TestStemPOS(t *testing.T) {
 		{"noun kitab", "kitab", 'N'},
 		{"verb gəl", "gəl", 'V'},
 		{"adj gözəl (also noun, A wins alphabetically)", "gözəl", 'A'},
+		{"noun dəniz", "dəniz", 'N'},
 		{"not found", "xyznotfound", 0},
 		{"empty", "", 0},
 	}
