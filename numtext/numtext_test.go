@@ -118,6 +118,9 @@ func TestConvertFloat(t *testing.T) {
 		{"invalid", "abc", MathMode, ""},
 		{"leading dot", ".5", MathMode, "sıfır tam onda beş"},
 		{"digit 0.123", "0.123", DigitMode, "sıfır vergül bir iki üç"},
+		{"negative zero math", "-0.0", MathMode, "sıfır tam onda sıfır"},
+		{"negative zero digit", "-0.0", DigitMode, "sıfır vergül sıfır"},
+		{"negative zero point five", "-0.5", MathMode, "mənfi sıfır tam onda beş"},
 	}
 
 	for _, tt := range cases {
@@ -153,6 +156,8 @@ func TestParse(t *testing.T) {
 		{"empty", "", 0, true},
 		{"unknown word", "hello", 0, true},
 		{"ordinal rejected", "beşinci", 0, true},
+		{"overflow multiplication", "on səkkiz kvintilyon", 0, true},
+		{"overflow accumulation", "bir kvintilyon bir kvintilyon", 0, true},
 	}
 
 	for _, tt := range cases {

@@ -103,7 +103,15 @@ func parse(s string) (int64, error) {
 			if group == 0 {
 				group = 1
 			}
-			current += group * val
+			// Overflow-checked multiplication and accumulation.
+			if group > maxAbs/val {
+				return 0, fmt.Errorf("numtext: out of range")
+			}
+			product := group * val
+			if current > maxAbs-product {
+				return 0, fmt.Errorf("numtext: out of range")
+			}
+			current += product
 			group = 0
 		}
 	}

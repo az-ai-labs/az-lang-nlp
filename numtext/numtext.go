@@ -61,9 +61,6 @@ func ConvertOrdinal(n int64) string {
 // Returns an empty string for invalid input (empty, non-numeric, multiple
 // separators).
 func ConvertFloat(s string, mode Mode) string {
-	if s == "" {
-		return ""
-	}
 	return convertFloat(s, mode)
 }
 

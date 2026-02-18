@@ -4,13 +4,13 @@ package numtext
 import (
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 const (
-	growGroup   = 32   // estimated bytes for a 0-999 group
-	growFloat   = 128  // estimated bytes for a decimal conversion
-	maxDenomFD  = 3    // max fractional digits with a named denominator
-	asciiRuneHi = 0x80 // upper bound for single-byte UTF-8 runes
+	growConvert = 64  // estimated bytes for a full cardinal conversion
+	growFloat   = 128 // estimated bytes for a decimal conversion
+	maxDenomFD  = 3   // max fractional digits with a named denominator
 )
 
 // convert converts an int64 to Azerbaijani cardinal text.
@@ -28,43 +28,44 @@ func convert(n int64) string {
 		n = -n
 	}
 
-	var parts []string
+	var b strings.Builder
+	b.Grow(growConvert)
+
+	if negative {
+		b.WriteString(wordNegative)
+	}
 
 	for _, mag := range magnitudes {
 		count := n / mag.value
 		if count > 0 {
-			// "bir min" → "min" (omit "bir" before "min" only)
+			if b.Len() > 0 {
+				b.WriteByte(' ')
+			}
+			// "bir min" -> "min" (omit "bir" before "min" only)
 			if mag.value == 1_000 && count == 1 {
-				parts = append(parts, mag.word)
+				b.WriteString(mag.word)
 			} else {
-				parts = append(parts, convertGroup(count)+" "+mag.word)
+				writeGroup(&b, count)
+				b.WriteByte(' ')
+				b.WriteString(mag.word)
 			}
 			n %= mag.value
 		}
 	}
 
 	if n > 0 {
-		parts = append(parts, convertGroup(n))
+		if b.Len() > 0 {
+			b.WriteByte(' ')
+		}
+		writeGroup(&b, n)
 	}
 
-	result := strings.Join(parts, " ")
-
-	if negative {
-		return wordNegative + " " + result
-	}
-	return result
+	return b.String()
 }
 
-// convertGroup converts a number in [0, 999] to Azerbaijani text.
-// Returns "" for 0; callers handle the zero case themselves.
-func convertGroup(n int64) string {
-	if n == 0 {
-		return ""
-	}
-
-	var b strings.Builder
-	b.Grow(growGroup)
-
+// writeGroup writes a number in [0, 999] as Azerbaijani text into b.
+// Callers must ensure n > 0.
+func writeGroup(b *strings.Builder, n int64) {
 	h := n / hundred
 	if h == 1 {
 		b.WriteString(wordHundred)
@@ -79,20 +80,18 @@ func convertGroup(n int64) string {
 	o := r % 10
 
 	if t > 0 {
-		if b.Len() > 0 {
+		if h > 0 {
 			b.WriteByte(' ')
 		}
 		b.WriteString(tens[t])
 	}
 
 	if o > 0 {
-		if b.Len() > 0 {
+		if h > 0 || t > 0 {
 			b.WriteByte(' ')
 		}
 		b.WriteString(ones[o])
 	}
-
-	return b.String()
 }
 
 // convertOrdinal converts an int64 to Azerbaijani ordinal text.
@@ -109,9 +108,6 @@ func convertOrdinal(n int64) string {
 	}
 
 	cardinal := convert(absN)
-	if cardinal == "" {
-		return ""
-	}
 
 	lv := lastVowel(cardinal)
 	if lv == 0 {
@@ -119,11 +115,11 @@ func convertOrdinal(n int64) string {
 	}
 
 	var suffix string
-	lastRune, _ := lastRuneOf(cardinal)
+	lastRune, _ := utf8.DecodeLastRuneInString(cardinal)
 	if isVowel(lastRune) {
-		suffix = ordinalShort[lv]
+		suffix = ordinalShortSuffix(lv)
 	} else {
-		suffix = ordinalFull[lv]
+		suffix = ordinalFullSuffix(lv)
 	}
 
 	result := cardinal + suffix
@@ -171,15 +167,17 @@ func convertFloat(s string, mode Mode) string {
 		return ""
 	}
 
-	var wholeVal int64
 	if wholePart == "" {
-		wholeVal = 0
-	} else {
-		var err error
-		wholeVal, err = strconv.ParseInt(wholePart, 10, 64)
-		if err != nil {
-			return ""
-		}
+		wholePart = "0"
+	}
+	wholeVal, err := strconv.ParseInt(wholePart, 10, 64)
+	if err != nil {
+		return ""
+	}
+
+	// Suppress "mənfi" prefix for negative zero (e.g. "-0.0").
+	if negative && wholeVal == 0 && allZeros(fracPart) {
+		negative = false
 	}
 
 	wholeText := convert(wholeVal)
@@ -246,23 +244,18 @@ func convertFloat(s string, mode Mode) string {
 // powerOf10Text returns the Azerbaijani text for 10^exp.
 // Used for composing denominators beyond 3 fractional digits.
 func powerOf10Text(exp int) string {
-	// Build 10^exp as int64 when possible, otherwise it exceeds maxAbs.
-	var val int64 = 1
-	for range exp {
-		val *= 10
-		if val > maxAbs {
-			return ""
-		}
+	if exp < 0 || exp >= len(powersOf10) {
+		return ""
 	}
-	return convert(val)
+	return convert(powersOf10[exp])
 }
 
 // lastVowel scans s backwards and returns the last rune that is an Azerbaijani vowel.
 // Returns 0 if no vowel is found.
 func lastVowel(s string) rune {
-	for i := len(s); i > 0; {
-		r, size := lastRuneAt(s, i)
-		i -= size
+	for s != "" {
+		r, size := utf8.DecodeLastRuneInString(s)
+		s = s[:len(s)-size]
 		if isVowel(r) {
 			return r
 		}
@@ -272,12 +265,48 @@ func lastVowel(s string) rune {
 
 // isVowel reports whether r is an Azerbaijani vowel.
 func isVowel(r rune) bool {
-	return strings.ContainsRune(azVowels, r)
+	switch r {
+	case 'a', 'e', 'ə', 'ı', 'i', 'o', 'ö', 'u', 'ü':
+		return true
+	}
+	return false
+}
+
+// ordinalFullSuffix returns the full ordinal suffix for a cardinal ending in a consonant.
+// The suffix is selected by vowel harmony based on the last vowel v.
+func ordinalFullSuffix(v rune) string {
+	switch v {
+	case 'a', 'ı':
+		return "ıncı"
+	case 'e', 'ə', 'i':
+		return "inci"
+	case 'o', 'u':
+		return "uncu"
+	case 'ö', 'ü':
+		return "üncü"
+	}
+	return ""
+}
+
+// ordinalShortSuffix returns the short ordinal suffix for a cardinal ending in a vowel.
+// The initial vowel of the suffix is dropped to avoid a vowel clash.
+func ordinalShortSuffix(v rune) string {
+	switch v {
+	case 'a', 'ı':
+		return "ncı"
+	case 'e', 'ə', 'i':
+		return "nci"
+	case 'o', 'u':
+		return "ncu"
+	case 'ö', 'ü':
+		return "ncü"
+	}
+	return ""
 }
 
 // locativeSuffix returns the Azerbaijani locative case suffix ("da" or "də")
 // based on vowel harmony of the last vowel in s.
-// Back vowels (a, ı, o, u) → "da"; front vowels (e, ə, i, ö, ü) → "də".
+// Back vowels (a, ı, o, u) -> "da"; front vowels (e, ə, i, ö, ü) -> "də".
 func locativeSuffix(s string) string {
 	lv := lastVowel(s)
 	switch lv {
@@ -288,37 +317,6 @@ func locativeSuffix(s string) string {
 	}
 }
 
-// lastRuneOf returns the last rune in s and its byte size.
-func lastRuneOf(s string) (rune, int) {
-	return lastRuneAt(s, len(s))
-}
-
-// lastRuneAt decodes the rune that ends at byte position end in s.
-func lastRuneAt(s string, end int) (rune, int) {
-	// Walk back up to 4 bytes to find a valid UTF-8 start byte.
-	for size := 1; size <= 4 && size <= end; size++ {
-		r, n := decodeRuneAt(s, end-size)
-		if n == size {
-			return r, size
-		}
-	}
-	return rune(s[end-1]), 1
-}
-
-// decodeRuneAt decodes the rune at byte position i in s.
-func decodeRuneAt(s string, i int) (rune, int) {
-	// Use a small slice trick to leverage the runtime UTF-8 decoder.
-	r, size := rune(s[i]), 1
-	if r < asciiRuneHi {
-		return r, 1
-	}
-	// Multi-byte: range over a slice starting at i.
-	for _, rv := range s[i:] {
-		return rv, len(string(rv))
-	}
-	return r, size
-}
-
 // allDigits reports whether s consists entirely of ASCII digit characters.
 // An empty string returns false.
 func allDigits(s string) bool {
@@ -327,6 +325,16 @@ func allDigits(s string) bool {
 	}
 	for i := 0; i < len(s); i++ {
 		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return true
+}
+
+// allZeros reports whether s consists entirely of '0' characters.
+func allZeros(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] != '0' {
 			return false
 		}
 	}

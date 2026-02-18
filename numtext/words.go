@@ -55,42 +55,31 @@ var magnitudes = []magnitude{
 	{value: 1_000, word: "min"},
 }
 
-// ordinalFull maps the last vowel of a cardinal that ends in a consonant
-// to the full ordinal suffix.
-var ordinalFull = map[rune]string{
-	'a': "ıncı",
-	'ı': "ıncı",
-	'e': "inci",
-	'ə': "inci",
-	'i': "inci",
-	'o': "uncu",
-	'u': "uncu",
-	'ö': "üncü",
-	'ü': "üncü",
-}
-
-// ordinalShort maps the last vowel of a cardinal that ends in a vowel
-// to the short ordinal suffix (drops the initial vowel).
-var ordinalShort = map[rune]string{
-	'a': "ncı",
-	'ı': "ncı",
-	'e': "nci",
-	'ə': "nci",
-	'i': "nci",
-	'o': "ncu",
-	'u': "ncu",
-	'ö': "ncü",
-	'ü': "ncü",
-}
-
-// azVowels contains all Azerbaijani vowel characters for quick membership testing.
-const azVowels = "aeəıioöuü"
-
 // denominators maps the number of fractional digits (1–3) to the Azerbaijani
 // denominator word used in math-mode decimal reading.
-// Denominators for more than 3 digits are composed programmatically.
-var denominators = map[int]string{
-	1: "onda",
-	2: "yüzdə",
-	3: "mində",
+// Index 0 is unused. Denominators beyond 3 digits are composed programmatically.
+var denominators = [4]string{"", "onda", "yüzdə", "mində"}
+
+// powersOf10 maps exponent (0–18) to the corresponding int64 value.
+// Used by powerOf10Text to avoid computing 10^exp at runtime.
+var powersOf10 = [19]int64{
+	1,
+	10,
+	100,
+	1_000,
+	10_000,
+	100_000,
+	1_000_000,
+	10_000_000,
+	100_000_000,
+	1_000_000_000,
+	10_000_000_000,
+	100_000_000_000,
+	1_000_000_000_000,
+	10_000_000_000_000,
+	100_000_000_000_000,
+	1_000_000_000_000_000,
+	10_000_000_000_000_000,
+	100_000_000_000_000_000,
+	1_000_000_000_000_000_000,
 }
