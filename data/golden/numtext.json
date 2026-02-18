@@ -1,0 +1,308 @@
+[
+  {
+    "name": "zero",
+    "input": 0,
+    "cardinal": "sıfır",
+    "ordinal": "sıfırıncı"
+  },
+  {
+    "name": "one",
+    "input": 1,
+    "cardinal": "bir",
+    "ordinal": "birinci"
+  },
+  {
+    "name": "two",
+    "input": 2,
+    "cardinal": "iki",
+    "ordinal": "ikinci"
+  },
+  {
+    "name": "three",
+    "input": 3,
+    "cardinal": "üç",
+    "ordinal": "üçüncü"
+  },
+  {
+    "name": "four",
+    "input": 4,
+    "cardinal": "dörd",
+    "ordinal": "dördüncü"
+  },
+  {
+    "name": "five",
+    "input": 5,
+    "cardinal": "beş",
+    "ordinal": "beşinci"
+  },
+  {
+    "name": "six",
+    "input": 6,
+    "cardinal": "altı",
+    "ordinal": "altıncı"
+  },
+  {
+    "name": "seven",
+    "input": 7,
+    "cardinal": "yeddi",
+    "ordinal": "yeddinci"
+  },
+  {
+    "name": "eight",
+    "input": 8,
+    "cardinal": "səkkiz",
+    "ordinal": "səkkizinci"
+  },
+  {
+    "name": "nine",
+    "input": 9,
+    "cardinal": "doqquz",
+    "ordinal": "doqquzuncu"
+  },
+  {
+    "name": "ten",
+    "input": 10,
+    "cardinal": "on",
+    "ordinal": "onuncu"
+  },
+  {
+    "name": "eleven",
+    "input": 11,
+    "cardinal": "on bir",
+    "ordinal": "on birinci"
+  },
+  {
+    "name": "fifteen",
+    "input": 15,
+    "cardinal": "on beş",
+    "ordinal": "on beşinci"
+  },
+  {
+    "name": "nineteen",
+    "input": 19,
+    "cardinal": "on doqquz",
+    "ordinal": "on doqquzuncu"
+  },
+  {
+    "name": "twenty",
+    "input": 20,
+    "cardinal": "iyirmi",
+    "ordinal": "iyirminci"
+  },
+  {
+    "name": "twenty-one",
+    "input": 21,
+    "cardinal": "iyirmi bir",
+    "ordinal": "iyirmi birinci"
+  },
+  {
+    "name": "thirty",
+    "input": 30,
+    "cardinal": "otuz",
+    "ordinal": "otuzuncu"
+  },
+  {
+    "name": "forty",
+    "input": 40,
+    "cardinal": "qırx",
+    "ordinal": "qırxıncı"
+  },
+  {
+    "name": "forty-two",
+    "input": 42,
+    "cardinal": "qırx iki",
+    "ordinal": "qırx ikinci"
+  },
+  {
+    "name": "fifty",
+    "input": 50,
+    "cardinal": "əlli",
+    "ordinal": "əllinci"
+  },
+  {
+    "name": "sixty",
+    "input": 60,
+    "cardinal": "altmış",
+    "ordinal": "altmışıncı"
+  },
+  {
+    "name": "seventy",
+    "input": 70,
+    "cardinal": "yetmiş",
+    "ordinal": "yetmişinci"
+  },
+  {
+    "name": "eighty",
+    "input": 80,
+    "cardinal": "səksən",
+    "ordinal": "səksəninci"
+  },
+  {
+    "name": "ninety",
+    "input": 90,
+    "cardinal": "doxsan",
+    "ordinal": "doxsanıncı"
+  },
+  {
+    "name": "ninety-nine",
+    "input": 99,
+    "cardinal": "doxsan doqquz",
+    "ordinal": "doxsan doqquzuncu"
+  },
+  {
+    "name": "one-hundred",
+    "input": 100,
+    "cardinal": "yüz",
+    "ordinal": "yüzüncü"
+  },
+  {
+    "name": "one-hundred-one",
+    "input": 101,
+    "cardinal": "yüz bir",
+    "ordinal": "yüz birinci"
+  },
+  {
+    "name": "two-hundred",
+    "input": 200,
+    "cardinal": "iki yüz",
+    "ordinal": "iki yüzüncü"
+  },
+  {
+    "name": "three-hundred-fifty",
+    "input": 350,
+    "cardinal": "üç yüz əlli",
+    "ordinal": "üç yüz əllinci"
+  },
+  {
+    "name": "five-hundred",
+    "input": 500,
+    "cardinal": "beş yüz",
+    "ordinal": "beş yüzüncü"
+  },
+  {
+    "name": "seven-hundred-seventy-seven",
+    "input": 777,
+    "cardinal": "yeddi yüz yetmiş yeddi",
+    "ordinal": "yeddi yüz yetmiş yeddinci"
+  },
+  {
+    "name": "nine-hundred-ninety-nine",
+    "input": 999,
+    "cardinal": "doqquz yüz doxsan doqquz",
+    "ordinal": "doqquz yüz doxsan doqquzuncu"
+  },
+  {
+    "name": "one-thousand",
+    "input": 1000,
+    "cardinal": "min",
+    "ordinal": "mininci"
+  },
+  {
+    "name": "one-thousand-one",
+    "input": 1001,
+    "cardinal": "min bir",
+    "ordinal": "min birinci"
+  },
+  {
+    "name": "one-thousand-one-hundred",
+    "input": 1100,
+    "cardinal": "min yüz",
+    "ordinal": "min yüzüncü"
+  },
+  {
+    "name": "one-thousand-five-hundred",
+    "input": 1500,
+    "cardinal": "min beş yüz",
+    "ordinal": "min beş yüzüncü"
+  },
+  {
+    "name": "two-thousand",
+    "input": 2000,
+    "cardinal": "iki min",
+    "ordinal": "iki mininci"
+  },
+  {
+    "name": "five-thousand",
+    "input": 5000,
+    "cardinal": "beş min",
+    "ordinal": "beş mininci"
+  },
+  {
+    "name": "ten-thousand",
+    "input": 10000,
+    "cardinal": "on min",
+    "ordinal": "on mininci"
+  },
+  {
+    "name": "fifty-thousand",
+    "input": 50000,
+    "cardinal": "əlli min",
+    "ordinal": "əlli mininci"
+  },
+  {
+    "name": "one-hundred-thousand",
+    "input": 100000,
+    "cardinal": "yüz min",
+    "ordinal": "yüz mininci"
+  },
+  {
+    "name": "five-hundred-thousand",
+    "input": 500000,
+    "cardinal": "beş yüz min",
+    "ordinal": "beş yüz mininci"
+  },
+  {
+    "name": "one-million",
+    "input": 1000000,
+    "cardinal": "bir milyon",
+    "ordinal": "bir milyonuncu"
+  },
+  {
+    "name": "two-million",
+    "input": 2000000,
+    "cardinal": "iki milyon",
+    "ordinal": "iki milyonuncu"
+  },
+  {
+    "name": "two-million-three-hundred-thousand-ninety-five",
+    "input": 2300095,
+    "cardinal": "iki milyon üç yüz min doxsan beş",
+    "ordinal": "iki milyon üç yüz min doxsan beşinci"
+  },
+  {
+    "name": "one-billion",
+    "input": 1000000000,
+    "cardinal": "bir milyard",
+    "ordinal": "bir milyardıncı"
+  },
+  {
+    "name": "two-billion",
+    "input": 2000000000,
+    "cardinal": "iki milyard",
+    "ordinal": "iki milyardıncı"
+  },
+  {
+    "name": "negative-one",
+    "input": -1,
+    "cardinal": "mənfi bir",
+    "ordinal": "mənfi birinci"
+  },
+  {
+    "name": "negative-forty-two",
+    "input": -42,
+    "cardinal": "mənfi qırx iki",
+    "ordinal": "mənfi qırx ikinci"
+  },
+  {
+    "name": "negative-one-thousand",
+    "input": -1000,
+    "cardinal": "mənfi min",
+    "ordinal": "mənfi mininci"
+  },
+  {
+    "name": "negative-one-million",
+    "input": -1000000,
+    "cardinal": "mənfi bir milyon",
+    "ordinal": "mənfi bir milyonuncu"
+  }
+]

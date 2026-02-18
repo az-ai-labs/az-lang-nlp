@@ -105,6 +105,46 @@ Uses a table-driven morphotactic state machine with backtracking. Validates vowe
 
 All functions are safe for concurrent use.
 
+## Number-to-Text
+
+Convert between numbers and Azerbaijani text representations.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/BarsNLP/barsnlp/numtext"
+)
+
+func main() {
+	// Cardinal number
+	fmt.Println(numtext.Convert(123))
+	// yüz iyirmi üç
+
+	// Ordinal number with vowel-harmony suffix
+	fmt.Println(numtext.ConvertOrdinal(5))
+	// beşinci
+
+	// Decimal: math mode
+	fmt.Println(numtext.ConvertFloat("3.14", numtext.MathMode))
+	// üç tam yüzdə on dörd
+
+	// Decimal: digit-by-digit mode
+	fmt.Println(numtext.ConvertFloat("3.14", numtext.DigitMode))
+	// üç vergül bir dörd
+
+	// Parse text back to number
+	n, _ := numtext.Parse("iki milyon üç yüz min doxsan beş")
+	fmt.Println(n)
+	// 2300095
+}
+```
+
+Supports integers up to ±10^18, negative numbers, ordinals, and decimals with dot or comma separator. Parse is case-insensitive and accepts both canonical ("yüz") and explicit ("bir yüz") forms.
+
+All functions are safe for concurrent use.
+
 ## License
 
 MIT
