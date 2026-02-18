@@ -112,6 +112,11 @@ linters:
       - linters:
           - gocritic
         text: "hugeParam:"
+      # CLI tools under cmd/ are not web-facing; taint analysis rules are false positives.
+      - path: "cmd/"
+        linters:
+          - gosec
+        text: "G703:|G705:"
 
 formatters:
   enable:

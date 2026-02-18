@@ -98,6 +98,23 @@ func azLower(r rune) rune {
 	}
 }
 
+// azUpper returns the Azerbaijani-aware uppercase form of r.
+// Handles the dotted/dotless I distinction:
+//   - i (U+0069) -> İ (U+0130, dotted capital I)
+//   - ı (U+0131, dotless small i) -> I (U+0049)
+//
+// All other runes use unicode.ToUpper.
+func azUpper(r rune) rune {
+	switch r {
+	case 'i':
+		return '\u0130' // i -> İ
+	case '\u0131':
+		return 'I' // ı -> I
+	default:
+		return unicode.ToUpper(r)
+	}
+}
+
 // toLower returns s with Azerbaijani-aware lowercasing applied to every rune.
 func toLower(s string) string {
 	var b strings.Builder

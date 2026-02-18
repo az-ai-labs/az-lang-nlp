@@ -76,17 +76,38 @@ func analyze(word string) []Analysis {
 
 	w.results = dedup(w.results)
 
-	// Sort by morpheme count DESC (deepest analysis first),
-	// then stem length ASC (shortest stem for same depth),
-	// then tags key lexicographically (deterministic tiebreaker).
+	// Sort analyses by plausibility. Known dictionary stems rank first.
+	// Among known stems, prefer longer stems (less stripping) and simpler
+	// analyses (fewer morphemes) — Occam's razor. Among unknown stems,
+	// prefer shorter stems (deeper stripping found the real root), then
+	// simpler analyses (fewer morphemes) for same-length stems.
 	sort.Slice(w.results, func(i, j int) bool {
-		mi, mj := len(w.results[i].Morphemes), len(w.results[j].Morphemes)
-		if mi != mj {
-			return mi > mj
+		ki := isKnownStem(toLower(w.results[i].Stem))
+		kj := isKnownStem(toLower(w.results[j].Stem))
+		if ki != kj {
+			return ki
 		}
 		si, sj := len([]rune(w.results[i].Stem)), len([]rune(w.results[j].Stem))
-		if si != sj {
-			return si < sj
+		if ki && kj {
+			// Both known: prefer longer stem (less aggressive stripping).
+			if si != sj {
+				return si > sj
+			}
+			// Same-length known stems: prefer fewer morphemes (simpler parse).
+			mi, mj := len(w.results[i].Morphemes), len(w.results[j].Morphemes)
+			if mi != mj {
+				return mi < mj
+			}
+		} else {
+			// Unknown stems: prefer shorter stem (deeper stripping), then
+			// simpler parse (fewer morphemes) for same-length stems.
+			if si != sj {
+				return si < sj
+			}
+			mi, mj := len(w.results[i].Morphemes), len(w.results[j].Morphemes)
+			if mi != mj {
+				return mi < mj
+			}
 		}
 		return tagsKey(w.results[i].Morphemes) < tagsKey(w.results[j].Morphemes)
 	})
@@ -153,17 +174,16 @@ func (w *walker) walk(pos int, state fsmState, morphemes []Morpheme, depth int) 
 			}
 
 			// Consonant assimilation for d/t alternation.
-			// Skip strict assimilation for Copula — both forms are standard
-			// in Azerbaijani (e.g. "gəlmişdir" and "gəlmiştir" are both valid).
-			// Also skip for q — orthographic convention uses -da after q
-			// (e.g. "otaqda", "kitabçılıqda"), not -ta.
-			if surfRunes[0] == 't' || surfRunes[0] == 'd' {
+			// Only reject t-form after non-voiceless consonants. The d-form
+			// is accepted after all consonants because real-world Azerbaijani
+			// text commonly uses -d even after voiceless consonants (e.g.
+			// "danışdı", "kitabçılıqda"). Dictionary-aware ranking handles
+			// disambiguation. Copula skips the check entirely — both forms
+			// are standard (e.g. "gəlmişdir" and "gəlmiştir").
+			if surfRunes[0] == 't' {
 				if hasDTVariants(rule) && stemEnd > 0 && rule.tag != Copula {
 					preceding := w.lowerRunes[stemEnd-1]
-					if surfRunes[0] == 't' && !isVoiceless(preceding) {
-						continue
-					}
-					if surfRunes[0] == 'd' && isVoiceless(preceding) && preceding != 'q' {
+					if !isVoiceless(preceding) {
 						continue
 					}
 				}

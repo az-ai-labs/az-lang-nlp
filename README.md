@@ -88,19 +88,20 @@ func main() {
 	// kitab
 
 	// Full morphological analysis
-	for _, a := range morph.Analyze("kitablarımızdan") {
+	for _, a := range morph.Analyze("kitablar") {
 		fmt.Println(a)
 	}
-	// kitab[Plural:lar|Poss1Pl:ımız|CaseAbl:dan]
-	// kitab
+	// kitab[Plural:lar]
+	// kitabl[TenseAorist:ar]
+	// kitablar
 
 	// Batch stemming (pairs with tokenizer.Words)
-	fmt.Println(morph.Stems([]string{"evlərdə", "gəlmişdir", "uşaqlar"}))
-	// [ev gəl uşaq]
+	fmt.Println(morph.Stems([]string{"kitablarımızdan", "evlərdə", "gəlmişdir"}))
+	// [kitab ev gəl]
 }
 ```
 
-Uses a table-driven morphotactic state machine with backtracking. Validates vowel harmony, consonant assimilation, and suffix ordering without requiring a dictionary.
+Uses a table-driven morphotactic state machine with backtracking. Validates vowel harmony, consonant assimilation, and suffix ordering. Includes an embedded dictionary (~12K stems from Wiktionary) for stem validation.
 
 All functions are safe for concurrent use.
 

@@ -316,7 +316,7 @@ var suffixRules = []suffixRule{
 			"t\u0131", "ti", "tu", "t\u00FC",
 		},
 		tag:        TensePastDef,
-		fromStates: []fsmState{initial, verbAfterNeg, verbAfterVoice},
+		fromStates: []fsmState{initial, verbAfterNeg, verbAfterVoice, verbAfterTense},
 		toState:    verbAfterTense,
 		harmony:    fourWay,
 	},
@@ -448,7 +448,7 @@ var suffixRules = []suffixRule{
 	{
 		surfaces:   []string{"m\u0131", "mi", "mu", "m\u00FC"},
 		tag:        Question,
-		fromStates: []fsmState{initial, verbAfterPerson, afterCopula},
+		fromStates: []fsmState{initial, verbAfterPerson, afterCopula, verbAfterTense},
 		toState:    afterQuestion,
 		harmony:    fourWay,
 	},

@@ -15,16 +15,17 @@
 //
 // All functions are safe for concurrent use by multiple goroutines.
 //
-// Known limitations (v1.0):
+// Known limitations:
 //
-//   - No dictionary lookup. Cannot distinguish homographic stems.
-//   - The -t causative suffix may produce false positives.
-//   - k/q restoration at morpheme boundaries is best-effort.
-//   - Reciprocal -ış/-iş/-uş/-üş may over-stem verb roots like danış-.
-//   - Composite tenses (pluperfect -mışdı-, etc.) are not supported.
-//   - Vowel dropping (ogul -> oglu) is not handled without a dictionary.
-//   - Azerbaijani Latin only. Use translit.CyrillicToLatin for Cyrillic input.
-//   - Input is expected in NFC Unicode normalization form.
+//   - Dictionary lookup is soft (ranking only). Unknown stems fall back
+//     to rule-based analysis which may over-stem.
+//   - Vowel drop restoration requires the stem to be in the dictionary.
+//   - oxu- class verbs absorb buffer -y- into the stem (oxuy-).
+//   - Morpheme tagging may prefer deeper parses over correct ones
+//     when multiple analyses tie (e.g. oxuyursan VoiceCaus vs TensePresent).
+//
+// Input must be Azerbaijani Latin in NFC form.
+// Use translit.CyrillicToLatin to convert Cyrillic input.
 package morph
 
 import (
@@ -233,6 +234,32 @@ var morphTagFromName = map[string]MorphTag{
 	"Question": Question,
 }
 
+// productiveTags lists morpheme tags that indicate a genuine productive
+// morphological decomposition. When the whole word is a known dictionary
+// stem but a shorter known stem with one of these tags exists, the shorter
+// stem is preferred. Case suffixes, possessives, and Negation are excluded
+// to prevent over-stemming (e.g. ana→an, alma→al).
+var productiveTags = map[MorphTag]bool{
+	TensePastDef:   true,
+	TensePastIndef: true,
+	TensePresent:   true,
+	TenseFuture:    true,
+	TenseAorist:    true,
+	MoodOblig:      true,
+	Participle:     true,
+	ParticipleAdj:  true,
+	Gerund:         true,
+	DerivAgent:     true,
+	DerivAbstract:  true,
+	DerivPriv:      true,
+	DerivPoss:      true,
+	DerivVerb:      true,
+	VoicePass:      true,
+	VoiceReflex:    true,
+	VoiceRecip:     true,
+	VoiceCaus:      true,
+}
+
 // String returns the name of the morpheme tag.
 func (t MorphTag) String() string {
 	if name, ok := morphTagNames[t]; ok {
@@ -294,6 +321,77 @@ func (a Analysis) String() string {
 
 const maxWordBytes = 256
 
+// findDeepVerbStem searches analyses for a known verb root that has
+// Negation, MoodOblig, or MoodCond as its first morpheme. These suffixes
+// sit close to the verb root in morphotactic order, so their presence
+// indicates a deeper (more correct) decomposition than a longer stem
+// that absorbed part of the suffix (e.g. gəlmə+di vs gəl+mə+di).
+// Returns the shortest such stem, or "" if none found.
+func findDeepVerbStem(results []Analysis) string {
+	var best string
+	bestLen := maxWordBytes
+	for _, a := range results {
+		if len(a.Morphemes) == 0 || !isKnownStem(toLower(a.Stem)) {
+			continue
+		}
+		tag := a.Morphemes[0].Tag
+		if tag == Negation || tag == MoodOblig || tag == MoodCond {
+			n := len([]rune(a.Stem))
+			if n < bestLen {
+				bestLen = n
+				best = a.Stem
+			}
+		}
+	}
+	return best
+}
+
+// findVowelDropStem searches analyses for an unknown stem that can be
+// restored to a known dictionary form via vowel insertion (e.g. oğl→oğul).
+// Only attempts restoration on stems not already in the dictionary, so that
+// plurals like qızlar→qız are not incorrectly restored (qızl→qızıl).
+// Preserves original casing of the first character.
+func findVowelDropStem(results []Analysis) string {
+	for _, a := range results {
+		if len(a.Morphemes) > 0 && !isKnownStem(toLower(a.Stem)) {
+			if restored := tryRestoreVowelDrop(toLower(a.Stem)); restored != "" {
+				rOrig := []rune(a.Stem)
+				rRest := []rune(restored)
+				if len(rOrig) > 0 && len(rRest) > 0 && rOrig[0] != azLower(rOrig[0]) {
+					rRest[0] = azUpper(rRest[0])
+					return string(rRest)
+				}
+				return restored
+			}
+		}
+	}
+	return ""
+}
+
+// findProductiveStem checks whether a known whole-word has a shorter known
+// stem with productive morphemes (verbal tenses, derivational suffixes, etc.).
+// This allows stemming of words like gələcək→gəl (TenseFuture) and
+// gözlük→göz (DerivAbstract) even when the whole word is in the dictionary.
+// Returns the shorter stem, or "" if no productive decomposition exists.
+func findProductiveStem(results []Analysis, word string) string {
+	wordLower := toLower(word)
+	for _, a := range results {
+		if len(a.Morphemes) == 0 {
+			continue
+		}
+		stemLower := toLower(a.Stem)
+		if stemLower == wordLower || !isKnownStem(stemLower) {
+			continue
+		}
+		// Require at least 2-rune surface to avoid false positives from
+		// single-char suffixes like -t (VoiceCaus) splitting paltar→pal.
+		if len([]rune(a.Morphemes[0].Surface)) >= 2 && productiveTags[a.Morphemes[0].Tag] {
+			return a.Stem
+		}
+	}
+	return ""
+}
+
 // Stem extracts the stem (base form) from an inflected Azerbaijani word.
 // Returns the original word if it cannot be analyzed or exceeds maxWordBytes.
 // Handles hyphens by stemming each part separately and rejoining.
@@ -323,9 +421,42 @@ func Stem(word string) string {
 	}
 
 	results := Analyze(word)
-	// Prefer analyses with morphemes (suffixed) over bare-stem.
-	// Results are sorted by morpheme count DESC, so first suffixed
-	// analysis is at index 0 if any exist.
+
+	// Four-pass dictionary-aware stem selection.
+	wordKnown := isKnownStem(toLower(word))
+	// Pass 1: prefer analysis with morphemes AND known dictionary stem,
+	// but skip when the whole word is also known (avoids stripping real
+	// stems like ana->an where both are dictionary entries).
+	if !wordKnown {
+		// First, check for deep verb root: when a derived verbal noun
+		// (gəlmə, yazma) is in the dictionary but the real verb root
+		// (gəl, yaz) should be preferred. Negation, MoodOblig and MoodCond
+		// are close-to-root suffixes that indicate a deeper decomposition.
+		if deep := findDeepVerbStem(results); deep != "" {
+			return deep
+		}
+		for _, a := range results {
+			if len(a.Morphemes) > 0 && isKnownStem(toLower(a.Stem)) {
+				return a.Stem
+			}
+		}
+	}
+	// Pass 2: vowel drop restoration (oğl→oğul, aln→alın).
+	if !wordKnown {
+		if restored := findVowelDropStem(results); restored != "" {
+			return restored
+		}
+	}
+	// Pass 3: if the whole word is a known dictionary stem, prefer keeping
+	// it unless a productive decomposition (verbal/derivational suffix with
+	// a known shorter stem) exists.
+	if wordKnown {
+		if prod := findProductiveStem(results, word); prod != "" {
+			return prod
+		}
+		return word
+	}
+	// Pass 4: fall back to any analysis with morphemes (pre-dictionary behavior).
 	for _, a := range results {
 		if len(a.Morphemes) > 0 {
 			return a.Stem

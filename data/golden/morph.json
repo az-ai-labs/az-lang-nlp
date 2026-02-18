@@ -31,43 +31,23 @@
   },
   {
     "word": "oğlan",
-    "stem": "oğl",
-    "morphemes": [
-      {
-        "surface": "an",
-        "tag": "Participle"
-      }
-    ]
+    "stem": "oğlan",
+    "morphemes": null
   },
   {
     "word": "dəniz",
-    "stem": "də",
-    "morphemes": [
-      {
-        "surface": "niz",
-        "tag": "Poss2Pl"
-      }
-    ]
+    "stem": "dəniz",
+    "morphemes": null
   },
   {
     "word": "gün",
-    "stem": "gü",
-    "morphemes": [
-      {
-        "surface": "n",
-        "tag": "Poss2Sg"
-      }
-    ]
+    "stem": "gün",
+    "morphemes": null
   },
   {
     "word": "gecə",
-    "stem": "gec",
-    "morphemes": [
-      {
-        "surface": "ə",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "gecə",
+    "morphemes": null
   },
   {
     "word": "yol",
@@ -106,13 +86,8 @@
   },
   {
     "word": "sevgi",
-    "stem": "sevg",
-    "morphemes": [
-      {
-        "surface": "i",
-        "tag": "CaseAcc"
-      }
-    ]
+    "stem": "sevgi",
+    "morphemes": null
   },
   {
     "word": "dağ",
@@ -279,12 +254,8 @@
     "stem": "kitab",
     "morphemes": [
       {
-        "surface": "lar",
-        "tag": "Plural"
-      },
-      {
-        "surface": "ı",
-        "tag": "CaseAcc"
+        "surface": "ları",
+        "tag": "Poss3Pl"
       }
     ]
   },
@@ -320,50 +291,38 @@
   },
   {
     "word": "gülüm",
-    "stem": "gü",
+    "stem": "gül",
     "morphemes": [
       {
-        "surface": "lü",
-        "tag": "DerivPoss"
-      },
-      {
-        "surface": "m",
+        "surface": "üm",
         "tag": "Poss1Sg"
       }
     ]
   },
   {
     "word": "gülün",
-    "stem": "gü",
+    "stem": "gül",
     "morphemes": [
       {
-        "surface": "lü",
-        "tag": "DerivPoss"
-      },
-      {
-        "surface": "n",
-        "tag": "Poss2Sg"
+        "surface": "ün",
+        "tag": "CaseGen"
       }
     ]
   },
   {
     "word": "gülü",
-    "stem": "gü",
+    "stem": "gül",
     "morphemes": [
       {
-        "surface": "lü",
-        "tag": "DerivPoss"
+        "surface": "ü",
+        "tag": "CaseAcc"
       }
     ]
   },
   {
     "word": "oğlum",
-    "stem": "oğ",
+    "stem": "oğlu",
     "morphemes": [
-      {
-        "surface": "lu",
-        "tag": "DerivPoss"
-      },
       {
         "surface": "m",
         "tag": "Poss1Sg"
@@ -385,22 +344,8 @@
     "stem": "gün",
     "morphemes": [
       {
-        "surface": "lər",
-        "tag": "Plural"
-      },
-      {
-        "surface": "i",
-        "tag": "CaseAcc"
-      }
-    ]
-  },
-  {
-    "word": "kitabın",
-    "stem": "kitab",
-    "morphemes": [
-      {
-        "surface": "ın",
-        "tag": "CaseGen"
+        "surface": "ləri",
+        "tag": "Poss3Pl"
       }
     ]
   },
@@ -411,16 +356,6 @@
       {
         "surface": "a",
         "tag": "CaseDat"
-      }
-    ]
-  },
-  {
-    "word": "kitabı",
-    "stem": "kitab",
-    "morphemes": [
-      {
-        "surface": "ı",
-        "tag": "CaseAcc"
       }
     ]
   },
@@ -455,32 +390,12 @@
     ]
   },
   {
-    "word": "evin",
-    "stem": "ev",
-    "morphemes": [
-      {
-        "surface": "in",
-        "tag": "CaseGen"
-      }
-    ]
-  },
-  {
     "word": "evə",
     "stem": "ev",
     "morphemes": [
       {
         "surface": "ə",
         "tag": "CaseDat"
-      }
-    ]
-  },
-  {
-    "word": "evi",
-    "stem": "ev",
-    "morphemes": [
-      {
-        "surface": "i",
-        "tag": "CaseAcc"
       }
     ]
   },
@@ -516,35 +431,31 @@
   },
   {
     "word": "yolun",
-    "stem": "yo",
+    "stem": "yol",
     "morphemes": [
       {
-        "surface": "lu",
-        "tag": "DerivPoss"
-      },
-      {
-        "surface": "n",
-        "tag": "Poss2Sg"
+        "surface": "un",
+        "tag": "CaseGen"
       }
     ]
   },
   {
     "word": "yola",
-    "stem": "yo",
+    "stem": "yol",
     "morphemes": [
       {
-        "surface": "la",
-        "tag": "CaseIns"
+        "surface": "a",
+        "tag": "CaseDat"
       }
     ]
   },
   {
     "word": "yolu",
-    "stem": "yo",
+    "stem": "yol",
     "morphemes": [
       {
-        "surface": "lu",
-        "tag": "DerivPoss"
+        "surface": "u",
+        "tag": "CaseAcc"
       }
     ]
   },
@@ -570,13 +481,8 @@
   },
   {
     "word": "yolla",
-    "stem": "yol",
-    "morphemes": [
-      {
-        "surface": "la",
-        "tag": "CaseIns"
-      }
-    ]
+    "stem": "yolla",
+    "morphemes": null
   },
   {
     "word": "kitabçı",
@@ -848,12 +754,8 @@
   },
   {
     "word": "işçilərdən",
-    "stem": "iş",
+    "stem": "işçi",
     "morphemes": [
-      {
-        "surface": "çi",
-        "tag": "DerivAgent"
-      },
       {
         "surface": "lər",
         "tag": "Plural"
@@ -1011,15 +913,11 @@
     "stem": "ev",
     "morphemes": [
       {
-        "surface": "lər",
-        "tag": "Plural"
+        "surface": "ləri",
+        "tag": "Poss3Pl"
       },
       {
-        "surface": "in",
-        "tag": "Poss2Sg"
-      },
-      {
-        "surface": "dən",
+        "surface": "ndən",
         "tag": "CaseAbl"
       }
     ]
@@ -1043,15 +941,11 @@
     "stem": "kitab",
     "morphemes": [
       {
-        "surface": "lar",
-        "tag": "Plural"
+        "surface": "ları",
+        "tag": "Poss3Pl"
       },
       {
-        "surface": "ın",
-        "tag": "Poss2Sg"
-      },
-      {
-        "surface": "dan",
+        "surface": "ndan",
         "tag": "CaseAbl"
       }
     ]
@@ -1502,16 +1396,8 @@
   },
   {
     "word": "müəllimdir",
-    "stem": "müəl",
+    "stem": "müəllim",
     "morphemes": [
-      {
-        "surface": "li",
-        "tag": "DerivPoss"
-      },
-      {
-        "surface": "m",
-        "tag": "Poss1Sg"
-      },
       {
         "surface": "dir",
         "tag": "Copula"
@@ -1520,12 +1406,8 @@
   },
   {
     "word": "tələbədir",
-    "stem": "tələb",
+    "stem": "tələbə",
     "morphemes": [
-      {
-        "surface": "ə",
-        "tag": "CaseDat"
-      },
       {
         "surface": "dir",
         "tag": "Copula"
@@ -1544,12 +1426,8 @@
   },
   {
     "word": "yaxşıdır",
-    "stem": "yaxş",
+    "stem": "yaxşı",
     "morphemes": [
-      {
-        "surface": "ı",
-        "tag": "CaseAcc"
-      },
       {
         "surface": "dır",
         "tag": "Copula"
@@ -1578,12 +1456,8 @@
   },
   {
     "word": "doğrudur",
-    "stem": "doğr",
+    "stem": "doğru",
     "morphemes": [
-      {
-        "surface": "u",
-        "tag": "CaseAcc"
-      },
       {
         "surface": "dur",
         "tag": "Copula"
@@ -1592,12 +1466,8 @@
   },
   {
     "word": "güclüdür",
-    "stem": "güc",
+    "stem": "güclü",
     "morphemes": [
-      {
-        "surface": "lü",
-        "tag": "DerivPoss"
-      },
       {
         "surface": "dür",
         "tag": "Copula"
@@ -1606,44 +1476,36 @@
   },
   {
     "word": "gəldimi",
-    "stem": "gəld",
+    "stem": "gəl",
     "morphemes": [
       {
-        "surface": "im",
-        "tag": "Poss1Sg"
+        "surface": "di",
+        "tag": "TensePastDef"
       },
       {
-        "surface": "i",
-        "tag": "CaseAcc"
+        "surface": "mi",
+        "tag": "Question"
       }
     ]
   },
   {
     "word": "yazdımı",
-    "stem": "yazd",
+    "stem": "yaz",
     "morphemes": [
       {
-        "surface": "ım",
-        "tag": "Poss1Sg"
+        "surface": "dı",
+        "tag": "TensePastDef"
       },
       {
-        "surface": "ı",
-        "tag": "CaseAcc"
+        "surface": "mı",
+        "tag": "Question"
       }
     ]
   },
   {
     "word": "müəllimdirmi",
-    "stem": "müəl",
+    "stem": "müəllim",
     "morphemes": [
-      {
-        "surface": "li",
-        "tag": "DerivPoss"
-      },
-      {
-        "surface": "m",
-        "tag": "Poss1Sg"
-      },
       {
         "surface": "dir",
         "tag": "Copula"
@@ -1693,7 +1555,7 @@
   },
   {
     "word": "ürəyi",
-    "stem": "ürəy",
+    "stem": "ürək",
     "morphemes": [
       {
         "surface": "i",
@@ -1703,7 +1565,7 @@
   },
   {
     "word": "uşağı",
-    "stem": "uşağ",
+    "stem": "uşaq",
     "morphemes": [
       {
         "surface": "ı",
@@ -1713,7 +1575,7 @@
   },
   {
     "word": "çiçəyi",
-    "stem": "çiçəy",
+    "stem": "çiçək",
     "morphemes": [
       {
         "surface": "i",
@@ -1723,7 +1585,7 @@
   },
   {
     "word": "ürəyim",
-    "stem": "ürəy",
+    "stem": "ürək",
     "morphemes": [
       {
         "surface": "im",
@@ -1733,7 +1595,7 @@
   },
   {
     "word": "uşağım",
-    "stem": "uşağ",
+    "stem": "uşaq",
     "morphemes": [
       {
         "surface": "ım",
@@ -1743,17 +1605,17 @@
   },
   {
     "word": "ürəyə",
-    "stem": "ürə",
+    "stem": "ürək",
     "morphemes": [
       {
-        "surface": "yə",
+        "surface": "ə",
         "tag": "CaseDat"
       }
     ]
   },
   {
     "word": "uşağa",
-    "stem": "uşağ",
+    "stem": "uşaq",
     "morphemes": [
       {
         "surface": "a",
@@ -1763,10 +1625,10 @@
   },
   {
     "word": "çiçəyə",
-    "stem": "çiçə",
+    "stem": "çiçək",
     "morphemes": [
       {
-        "surface": "yə",
+        "surface": "ə",
         "tag": "CaseDat"
       }
     ]
@@ -1793,12 +1655,8 @@
   },
   {
     "word": "qələmdə",
-    "stem": "qələ",
+    "stem": "qələm",
     "morphemes": [
-      {
-        "surface": "m",
-        "tag": "Poss1Sg"
-      },
       {
         "surface": "də",
         "tag": "CaseLoc"
@@ -1807,12 +1665,8 @@
   },
   {
     "word": "qələmdən",
-    "stem": "qələ",
+    "stem": "qələm",
     "morphemes": [
-      {
-        "surface": "m",
-        "tag": "Poss1Sg"
-      },
       {
         "surface": "dən",
         "tag": "CaseAbl"
@@ -1821,23 +1675,13 @@
   },
   {
     "word": "ana",
-    "stem": "an",
-    "morphemes": [
-      {
-        "surface": "a",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "ana",
+    "morphemes": null
   },
   {
     "word": "masa",
-    "stem": "ma",
-    "morphemes": [
-      {
-        "surface": "sa",
-        "tag": "MoodCond"
-      }
-    ]
+    "stem": "masa",
+    "morphemes": null
   },
   {
     "word": "dərs",
@@ -1846,63 +1690,33 @@
   },
   {
     "word": "xəbər",
-    "stem": "xəb",
-    "morphemes": [
-      {
-        "surface": "ər",
-        "tag": "TenseAorist"
-      }
-    ]
+    "stem": "xəbər",
+    "morphemes": null
   },
   {
     "word": "nəfər",
-    "stem": "nəf",
-    "morphemes": [
-      {
-        "surface": "ər",
-        "tag": "TenseAorist"
-      }
-    ]
+    "stem": "nəfər",
+    "morphemes": null
   },
   {
     "word": "mənzil",
-    "stem": "mənz",
-    "morphemes": [
-      {
-        "surface": "il",
-        "tag": "VoicePass"
-      }
-    ]
+    "stem": "mənzil",
+    "morphemes": null
   },
   {
     "word": "pəncərə",
-    "stem": "pəncər",
-    "morphemes": [
-      {
-        "surface": "ə",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "pəncərə",
+    "morphemes": null
   },
   {
     "word": "küçə",
-    "stem": "küç",
-    "morphemes": [
-      {
-        "surface": "ə",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "küçə",
+    "morphemes": null
   },
   {
     "word": "meşə",
-    "stem": "meş",
-    "morphemes": [
-      {
-        "surface": "ə",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "meşə",
+    "morphemes": null
   },
   {
     "word": "sahə",
@@ -1911,27 +1725,13 @@
   },
   {
     "word": "xalça",
-    "stem": "xalç",
-    "morphemes": [
-      {
-        "surface": "a",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "xalça",
+    "morphemes": null
   },
   {
     "word": "paltar",
-    "stem": "pal",
-    "morphemes": [
-      {
-        "surface": "t",
-        "tag": "VoiceCaus"
-      },
-      {
-        "surface": "ar",
-        "tag": "TenseAorist"
-      }
-    ]
+    "stem": "paltar",
+    "morphemes": null
   },
   {
     "word": "qardaş",
@@ -1940,81 +1740,38 @@
   },
   {
     "word": "bacı",
-    "stem": "bac",
-    "morphemes": [
-      {
-        "surface": "ı",
-        "tag": "CaseAcc"
-      }
-    ]
+    "stem": "bacı",
+    "morphemes": null
   },
   {
     "word": "dayı",
-    "stem": "day",
-    "morphemes": [
-      {
-        "surface": "ı",
-        "tag": "CaseAcc"
-      }
-    ]
+    "stem": "dayı",
+    "morphemes": null
   },
   {
     "word": "nənə",
-    "stem": "nə",
-    "morphemes": [
-      {
-        "surface": "n",
-        "tag": "Poss2Sg"
-      },
-      {
-        "surface": "ə",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "nənə",
+    "morphemes": null
   },
   {
     "word": "bala",
-    "stem": "ba",
-    "morphemes": [
-      {
-        "surface": "la",
-        "tag": "CaseIns"
-      }
-    ]
+    "stem": "bala",
+    "morphemes": null
   },
   {
     "word": "alma",
-    "stem": "al",
-    "morphemes": [
-      {
-        "surface": "m",
-        "tag": "Poss1Sg"
-      },
-      {
-        "surface": "a",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "alma",
+    "morphemes": null
   },
   {
     "word": "çanta",
-    "stem": "çant",
-    "morphemes": [
-      {
-        "surface": "a",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "çanta",
+    "morphemes": null
   },
   {
     "word": "lampa",
-    "stem": "lamp",
-    "morphemes": [
-      {
-        "surface": "a",
-        "tag": "CaseDat"
-      }
-    ]
+    "stem": "lampa",
+    "morphemes": null
   },
   {
     "word": "oxudum",
@@ -2126,14 +1883,10 @@
     "morphemes": [
       {
         "surface": "ir",
-        "tag": "VoiceCaus"
+        "tag": "TensePresent"
       },
       {
-        "surface": "sə",
-        "tag": "MoodCond"
-      },
-      {
-        "surface": "n",
+        "surface": "sən",
         "tag": "Pers2Sg"
       }
     ]
@@ -2276,18 +2029,14 @@
   },
   {
     "word": "demişsən",
-    "stem": "dem",
+    "stem": "de",
     "morphemes": [
       {
-        "surface": "iş",
-        "tag": "VoiceRecip"
+        "surface": "miş",
+        "tag": "TensePastIndef"
       },
       {
-        "surface": "sə",
-        "tag": "MoodCond"
-      },
-      {
-        "surface": "n",
+        "surface": "sən",
         "tag": "Pers2Sg"
       }
     ]
@@ -2352,12 +2101,8 @@
   },
   {
     "word": "açılır",
-    "stem": "aç",
+    "stem": "açıl",
     "morphemes": [
-      {
-        "surface": "ıl",
-        "tag": "VoicePass"
-      },
       {
         "surface": "ır",
         "tag": "TensePresent"
@@ -2370,7 +2115,7 @@
     "morphemes": [
       {
         "surface": "ır",
-        "tag": "VoiceCaus"
+        "tag": "TensePresent"
       },
       {
         "surface": "dı",
@@ -2380,12 +2125,8 @@
   },
   {
     "word": "açılmışdır",
-    "stem": "aç",
+    "stem": "açıl",
     "morphemes": [
-      {
-        "surface": "ıl",
-        "tag": "VoicePass"
-      },
       {
         "surface": "mış",
         "tag": "TensePastIndef"
@@ -2398,12 +2139,8 @@
   },
   {
     "word": "geyinir",
-    "stem": "gey",
+    "stem": "geyin",
     "morphemes": [
-      {
-        "surface": "in",
-        "tag": "VoiceReflex"
-      },
       {
         "surface": "ir",
         "tag": "TensePresent"
@@ -2412,12 +2149,8 @@
   },
   {
     "word": "geyinirəm",
-    "stem": "gey",
+    "stem": "geyin",
     "morphemes": [
-      {
-        "surface": "in",
-        "tag": "VoiceReflex"
-      },
       {
         "surface": "ir",
         "tag": "TensePresent"
@@ -2430,12 +2163,8 @@
   },
   {
     "word": "görüşür",
-    "stem": "gör",
+    "stem": "görüş",
     "morphemes": [
-      {
-        "surface": "üş",
-        "tag": "VoiceRecip"
-      },
       {
         "surface": "ür",
         "tag": "TensePresent"
@@ -2444,35 +2173,39 @@
   },
   {
     "word": "görüşdülər",
-    "stem": "görüşd",
+    "stem": "görüş",
     "morphemes": [
       {
-        "surface": "ül",
-        "tag": "VoicePass"
+        "surface": "dü",
+        "tag": "TensePastDef"
       },
       {
-        "surface": "ər",
-        "tag": "TenseAorist"
+        "surface": "lər",
+        "tag": "Pers3"
       }
     ]
   },
   {
     "word": "böyütdü",
-    "stem": "böyütd",
+    "stem": "böyüt",
     "morphemes": [
       {
-        "surface": "ü",
-        "tag": "CaseAcc"
+        "surface": "dü",
+        "tag": "TensePastDef"
       }
     ]
   },
   {
     "word": "böyütdüm",
-    "stem": "böyütd",
+    "stem": "böyüt",
     "morphemes": [
       {
-        "surface": "üm",
-        "tag": "Poss1Sg"
+        "surface": "dü",
+        "tag": "TensePastDef"
+      },
+      {
+        "surface": "m",
+        "tag": "Pers1Sg"
       }
     ]
   },
@@ -2562,14 +2295,10 @@
     "morphemes": [
       {
         "surface": "ur",
-        "tag": "VoiceCaus"
+        "tag": "TensePresent"
       },
       {
-        "surface": "sa",
-        "tag": "MoodCond"
-      },
-      {
-        "surface": "n",
+        "surface": "san",
         "tag": "Pers2Sg"
       }
     ]
@@ -2618,12 +2347,8 @@
   },
   {
     "word": "danışır",
-    "stem": "dan",
+    "stem": "danış",
     "morphemes": [
-      {
-        "surface": "ış",
-        "tag": "VoiceRecip"
-      },
       {
         "surface": "ır",
         "tag": "TensePresent"
@@ -2632,22 +2357,18 @@
   },
   {
     "word": "danışdı",
-    "stem": "danışd",
+    "stem": "danış",
     "morphemes": [
       {
-        "surface": "ı",
-        "tag": "CaseAcc"
+        "surface": "dı",
+        "tag": "TensePastDef"
       }
     ]
   },
   {
     "word": "danışmışdır",
-    "stem": "dan",
+    "stem": "danış",
     "morphemes": [
-      {
-        "surface": "ış",
-        "tag": "VoiceRecip"
-      },
       {
         "surface": "mış",
         "tag": "TensePastIndef"
@@ -2660,12 +2381,8 @@
   },
   {
     "word": "danışacaq",
-    "stem": "dan",
+    "stem": "danış",
     "morphemes": [
-      {
-        "surface": "ış",
-        "tag": "VoiceRecip"
-      },
       {
         "surface": "acaq",
         "tag": "TenseFuture"
@@ -2674,12 +2391,8 @@
   },
   {
     "word": "danışmalıdır",
-    "stem": "dan",
+    "stem": "danış",
     "morphemes": [
-      {
-        "surface": "ış",
-        "tag": "VoiceRecip"
-      },
       {
         "surface": "malı",
         "tag": "MoodOblig"
@@ -2692,12 +2405,8 @@
   },
   {
     "word": "danışsa",
-    "stem": "dan",
+    "stem": "danış",
     "morphemes": [
-      {
-        "surface": "ış",
-        "tag": "VoiceRecip"
-      },
       {
         "surface": "sa",
         "tag": "MoodCond"
@@ -2800,7 +2509,20 @@
   },
   {
     "word": "qurtarmışdıq",
-    "stem": "qurtarmışdıq",
-    "morphemes": null
+    "stem": "qurtar",
+    "morphemes": [
+      {
+        "surface": "mış",
+        "tag": "TensePastIndef"
+      },
+      {
+        "surface": "dı",
+        "tag": "TensePastDef"
+      },
+      {
+        "surface": "q",
+        "tag": "Pers1Pl"
+      }
+    ]
   }
 ]
