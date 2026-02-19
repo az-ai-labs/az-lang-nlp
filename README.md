@@ -145,6 +145,42 @@ Supports integers up to ±10^18, negative numbers, ordinals, and decimals with d
 
 All functions are safe for concurrent use.
 
+## Named Entity Recognition
+
+Extract structured entities from Azerbaijani text: FIN, VOEN, phone numbers, emails, IBANs, license plates, and URLs.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/BarsNLP/barsnlp/ner"
+)
+
+func main() {
+	// Extract all entities with byte offsets
+	for _, e := range ner.Recognize("FIN: 5ARPXK2, tel +994501234567") {
+		fmt.Printf("%s: %q (labeled=%v)\n", e.Type, e.Text, e.Labeled)
+	}
+	// FIN: "5ARPXK2" (labeled=true)
+	// Phone: "+994501234567" (labeled=false)
+
+	// Convenience functions return []string
+	fmt.Println(ner.Phones("+994501234567 və 0551234567"))
+	// [+994501234567 0551234567]
+
+	fmt.Println(ner.Emails("info@gov.az"))
+	// [info@gov.az]
+
+	fmt.Println(ner.IBANs("AZ21NABZ00000000137010001944"))
+	// [AZ21NABZ00000000137010001944]
+}
+```
+
+FIN and VOEN patterns are ambiguous in isolation. When preceded by a keyword (e.g. "FIN:", "VOEN:"), `Entity.Labeled` is true, indicating higher confidence. Overlapping entities are resolved by preferring longer matches.
+
+All functions are safe for concurrent use.
+
 ## License
 
 MIT

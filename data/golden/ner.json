@@ -1,0 +1,164 @@
+[
+  {
+    "name": "phone_international",
+    "input": "Əlaqə: +994501234567",
+    "entities": [
+      {
+        "text": "+994501234567",
+        "start": 9,
+        "end": 22,
+        "type": "Phone",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "phone_local",
+    "input": "nömrə 0551234567",
+    "entities": [
+      {
+        "text": "0551234567",
+        "start": 8,
+        "end": 18,
+        "type": "Phone",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "email_simple",
+    "input": "Göndərin: info@example.com",
+    "entities": [
+      {
+        "text": "info@example.com",
+        "start": 12,
+        "end": 28,
+        "type": "Email",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "fin_labeled",
+    "input": "FIN: 5ARPXK2",
+    "entities": [
+      {
+        "text": "5ARPXK2",
+        "start": 5,
+        "end": 12,
+        "type": "FIN",
+        "labeled": true
+      }
+    ]
+  },
+  {
+    "name": "fin_bare",
+    "input": "sənəddə 5ARPXK2 var",
+    "entities": [
+      {
+        "text": "5ARPXK2",
+        "start": 11,
+        "end": 18,
+        "type": "FIN",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "voen_labeled",
+    "input": "VOEN: 1234567890",
+    "entities": [
+      {
+        "text": "1234567890",
+        "start": 6,
+        "end": 16,
+        "type": "VOEN",
+        "labeled": true
+      }
+    ]
+  },
+  {
+    "name": "voen_with_umlaut",
+    "input": "VÖEN: 9876543210",
+    "entities": [
+      {
+        "text": "9876543210",
+        "start": 7,
+        "end": 17,
+        "type": "VOEN",
+        "labeled": true
+      }
+    ]
+  },
+  {
+    "name": "iban",
+    "input": "Hesab: AZ21NABZ00000000137010001944",
+    "entities": [
+      {
+        "text": "AZ21NABZ00000000137010001944",
+        "start": 7,
+        "end": 35,
+        "type": "IBAN",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "license_plate",
+    "input": "avtomobil 10-AA-123",
+    "entities": [
+      {
+        "text": "10-AA-123",
+        "start": 10,
+        "end": 19,
+        "type": "LicensePlate",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "url_https",
+    "input": "sayt: https://gov.az/services",
+    "entities": [
+      {
+        "text": "https://gov.az/services",
+        "start": 6,
+        "end": 29,
+        "type": "URL",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "mixed_entities",
+    "input": "FIN: 5ARPXK2, tel +994501234567, email info@gov.az",
+    "entities": [
+      {
+        "text": "5ARPXK2",
+        "start": 5,
+        "end": 12,
+        "type": "FIN",
+        "labeled": true
+      },
+      {
+        "text": "+994501234567",
+        "start": 18,
+        "end": 31,
+        "type": "Phone",
+        "labeled": false
+      },
+      {
+        "text": "info@gov.az",
+        "start": 39,
+        "end": 50,
+        "type": "Email",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "no_entities",
+    "input": "Bu sadə cümlə, heç bir entity yoxdur.",
+    "entities": null
+  }
+]
