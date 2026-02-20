@@ -9,6 +9,7 @@ import (
 )
 
 func TestDetect(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name       string
 		in         string
@@ -73,6 +74,7 @@ func TestDetect(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got := Detect(tt.in)
 			if got.Lang != tt.wantLang {
 				t.Errorf("Lang: got %s, want %s", got.Lang, tt.wantLang)
@@ -88,7 +90,9 @@ func TestDetect(t *testing.T) {
 }
 
 func TestDetectAll(t *testing.T) {
+	t.Parallel()
 	t.Run("returns exactly four results", func(t *testing.T) {
+		t.Parallel()
 		results := DetectAll("Salam, necəsən? Bu gün hava çox gözəldir.")
 		if len(results) != 4 {
 			t.Fatalf("got %d results, want 4", len(results))
@@ -96,6 +100,7 @@ func TestDetectAll(t *testing.T) {
 	})
 
 	t.Run("results sorted by descending confidence", func(t *testing.T) {
+		t.Parallel()
 		results := DetectAll("Salam, necəsən? Bu gün hava çox gözəldir.")
 		for i := 1; i < len(results); i++ {
 			if results[i].Confidence > results[i-1].Confidence {
@@ -106,6 +111,7 @@ func TestDetectAll(t *testing.T) {
 	})
 
 	t.Run("confidences sum to approximately 1.0", func(t *testing.T) {
+		t.Parallel()
 		results := DetectAll("Привет, как у тебя дела сегодня?")
 		var sum float64
 		for _, r := range results {
@@ -117,6 +123,7 @@ func TestDetectAll(t *testing.T) {
 	})
 
 	t.Run("nil on empty input", func(t *testing.T) {
+		t.Parallel()
 		if got := DetectAll(""); got != nil {
 			t.Errorf("got %v, want nil", got)
 		}
@@ -124,6 +131,7 @@ func TestDetectAll(t *testing.T) {
 }
 
 func TestLang(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		in   string
@@ -138,6 +146,7 @@ func TestLang(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got := Lang(tt.in)
 			if got != tt.want {
 				t.Errorf("got %q, want %q", got, tt.want)
@@ -147,6 +156,7 @@ func TestLang(t *testing.T) {
 }
 
 func TestDetectEdgeCases(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		name string
 		in   string
@@ -161,6 +171,7 @@ func TestDetectEdgeCases(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
 			got := Detect(tt.in)
 			if got.Lang != tt.want {
 				t.Errorf("got %s, want %s", got.Lang, tt.want)
@@ -170,10 +181,12 @@ func TestDetectEdgeCases(t *testing.T) {
 }
 
 func TestLanguageJSON(t *testing.T) {
+	t.Parallel()
 	langs := []Language{Unknown, Azerbaijani, Russian, English, Turkish}
 
 	for _, lang := range langs {
 		t.Run(lang.String(), func(t *testing.T) {
+			t.Parallel()
 			data, err := json.Marshal(lang)
 			if err != nil {
 				t.Fatalf("MarshalJSON: %v", err)
@@ -191,6 +204,7 @@ func TestLanguageJSON(t *testing.T) {
 	}
 
 	t.Run("unmarshal unknown string", func(t *testing.T) {
+		t.Parallel()
 		var l Language
 		if err := l.UnmarshalJSON([]byte(`"Klingon"`)); err == nil {
 			t.Error("want error for unknown language, got nil")
@@ -198,6 +212,7 @@ func TestLanguageJSON(t *testing.T) {
 	})
 
 	t.Run("unmarshal non-string", func(t *testing.T) {
+		t.Parallel()
 		var l Language
 		if err := l.UnmarshalJSON([]byte(`123`)); err == nil {
 			t.Error("want error for non-string JSON, got nil")
@@ -206,6 +221,7 @@ func TestLanguageJSON(t *testing.T) {
 }
 
 func TestScriptJSON(t *testing.T) {
+	t.Parallel()
 	scripts := []Script{ScriptUnknown, ScriptLatn, ScriptCyrl}
 
 	for _, sc := range scripts {
@@ -214,6 +230,7 @@ func TestScriptJSON(t *testing.T) {
 			name = "ScriptUnknown"
 		}
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			data, err := json.Marshal(sc)
 			if err != nil {
 				t.Fatalf("MarshalJSON: %v", err)
@@ -231,6 +248,7 @@ func TestScriptJSON(t *testing.T) {
 	}
 
 	t.Run("unmarshal unknown string", func(t *testing.T) {
+		t.Parallel()
 		var s Script
 		if err := s.UnmarshalJSON([]byte(`"Glag"`)); err == nil {
 			t.Error("want error for unknown script, got nil")
@@ -238,6 +256,7 @@ func TestScriptJSON(t *testing.T) {
 	})
 
 	t.Run("unmarshal non-string", func(t *testing.T) {
+		t.Parallel()
 		var s Script
 		if err := s.UnmarshalJSON([]byte(`42`)); err == nil {
 			t.Error("want error for non-string JSON, got nil")
@@ -246,6 +265,7 @@ func TestScriptJSON(t *testing.T) {
 }
 
 func TestLanguageString(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		lang Language
 		want string
@@ -260,6 +280,7 @@ func TestLanguageString(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.want, func(t *testing.T) {
+			t.Parallel()
 			got := tt.lang.String()
 			if got != tt.want {
 				t.Errorf("got %q, want %q", got, tt.want)
@@ -269,6 +290,7 @@ func TestLanguageString(t *testing.T) {
 }
 
 func TestScriptString(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		script Script
 		want   string
@@ -285,6 +307,7 @@ func TestScriptString(t *testing.T) {
 			name = "ScriptUnknown"
 		}
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			got := tt.script.String()
 			if got != tt.want {
 				t.Errorf("got %q, want %q", got, tt.want)
@@ -294,6 +317,7 @@ func TestScriptString(t *testing.T) {
 }
 
 func TestOversizedInputTruncated(t *testing.T) {
+	t.Parallel()
 	sentence := "Salam, necəsən? Bu gün hava çox gözəldir. "
 	// Repeat until we exceed 1 MiB.
 	repeat := (maxInputBytes / len(sentence)) + 2

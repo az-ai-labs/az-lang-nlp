@@ -18,9 +18,10 @@
 package detect
 
 import (
+	"cmp"
 	"encoding/json"
 	"fmt"
-	"sort"
+	"slices"
 	"unicode"
 	"unicode/utf8"
 )
@@ -84,11 +85,7 @@ func (l *Language) UnmarshalJSON(data []byte) error {
 	}
 	lang, ok := languageFromName[s]
 	if !ok {
-		const maxErrLen = 50
-		if len(s) > maxErrLen {
-			s = s[:maxErrLen] + "..."
-		}
-		return fmt.Errorf("unknown language: %q", s)
+		return fmt.Errorf("detect: unknown language: %q", s)
 	}
 	*l = lang
 	return nil
@@ -138,17 +135,17 @@ func (s *Script) UnmarshalJSON(data []byte) error {
 	}
 	sc, ok := scriptFromName[str]
 	if !ok {
-		const maxErrLen = 50
-		if len(str) > maxErrLen {
-			str = str[:maxErrLen] + "..."
-		}
-		return fmt.Errorf("unknown script: %q", str)
+		return fmt.Errorf("detect: unknown script: %q", str)
 	}
 	*s = sc
 	return nil
 }
 
 // Result holds the outcome of a language detection.
+//
+// Confidence is a sum-normalized score in [0.0, 1.0]. All four language scores
+// are divided by their total, so Confidence reflects the relative strength of
+// the detection within this input, not an absolute probability.
 type Result struct {
 	Lang       Language `json:"lang"`
 	Script     Script   `json:"script"`
@@ -160,21 +157,42 @@ const (
 	minLetters    = 10      // minimum letter count for meaningful detection
 )
 
+// Scoring weights for the hybrid detection algorithm.
+const (
+	// cyrillicAzBias is the prior probability for Azerbaijani when no
+	// discriminating Cyrillic characters are found.
+	cyrillicAzBias = 0.45
+
+	// cyrillicRuBias is the prior probability for Russian when no
+	// discriminating Cyrillic characters are found.
+	cyrillicRuBias = 0.55
+
+	// schwaMultiplier amplifies the schwa count because schwa is the
+	// single strongest discriminator between Azerbaijani and Turkish Latin.
+	schwaMultiplier = 10.0
+
+	// sharedTurkicDampener reduces the shared-character score to keep it
+	// subordinate to the schwa score in the clear Azerbaijani path.
+	sharedTurkicDampener = 0.1
+
+	// xqBoostPerChar is the per-character score bonus for x/q letters,
+	// which are common in Azerbaijani but rare in Turkish.
+	xqBoostPerChar = 0.5
+
+	// englishTurkicDampener suppresses the English score when Turkic
+	// markers are present in the text.
+	englishTurkicDampener = 0.05
+)
+
 // Detect identifies the most likely language of s.
 // Returns the zero Result when detection is not possible (empty input, too
 // few letters, or input that does not resemble a supported language).
 func Detect(s string) Result {
-	results := detectAll(s)
+	results := DetectAll(s)
 	if len(results) == 0 {
 		return Result{}
 	}
 	return results[0]
-}
-
-// DetectAll returns all four supported languages ranked by descending
-// confidence, or nil when detection is not possible.
-func DetectAll(s string) []Result {
-	return detectAll(s)
 }
 
 // Lang returns the ISO 639-1 code of the most likely language of s
@@ -187,8 +205,9 @@ func Lang(s string) string {
 	return languageCodes[r.Lang]
 }
 
-// detectAll is the core implementation shared by Detect and DetectAll.
-func detectAll(s string) []Result {
+// DetectAll returns all four supported languages ranked by descending
+// confidence, or nil when detection is not possible.
+func DetectAll(s string) []Result {
 	if s == "" {
 		return nil
 	}
@@ -203,6 +222,12 @@ func detectAll(s string) []Result {
 	}
 
 	// Single-pass character classification.
+	//
+	// Cyrillic unique to Azerbaijani: ә/Ә ғ/Ғ ҹ/Ҹ ҝ/Ҝ ө/Ө ү/Ү һ/Һ ј/Ј
+	// Cyrillic unique to Russian:     ы/Ы э/Э щ/Щ
+	// Latin unique to Azerbaijani:    ə/Ə (schwa — strongest discriminator)
+	// Latin shared Turkish/Azerbaijani: ğ/Ğ ş/Ş ç/Ç ö/Ö ü/Ü ı/İ
+	// Latin Azerbaijani signal:        x/X q/Q (common in az, rare in tr)
 	var (
 		totalLetters       int
 		cyrillicLetters    int
@@ -223,21 +248,20 @@ func detectAll(s string) []Result {
 
 		if isCyrillic(r) {
 			cyrillicLetters++
-			if azCyrillicUnique[r] {
+			switch r {
+			case 'ә', 'Ә', 'ғ', 'Ғ', 'ҹ', 'Ҹ', 'ҝ', 'Ҝ', 'ө', 'Ө', 'ү', 'Ү', 'һ', 'Һ', 'ј', 'Ј':
 				azCyrUniqueCount++
-			}
-			if ruCyrillicUnique[r] {
+			case 'ы', 'Ы', 'э', 'Э', 'щ', 'Щ':
 				ruUniqueCount++
 			}
 		} else {
 			latinLetters++
-			if azLatinUnique[r] {
+			switch r {
+			case 'ə', 'Ə':
 				azLatinUniqueCount++
-			}
-			if trAzSharedSpecial[r] {
+			case 'ğ', 'Ğ', 'ş', 'Ş', 'ç', 'Ç', 'ö', 'Ö', 'ü', 'Ü', 'ı', 'İ':
 				trAzSharedCount++
-			}
-			if azLatinXQ[r] {
+			case 'x', 'X', 'q', 'Q':
 				xqCount++
 			}
 			if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') {
@@ -265,8 +289,8 @@ func detectAll(s string) []Result {
 		// No discriminating characters found — apply a slight Russian bias
 		// because Russian is more common in Cyrillic contexts.
 		if azScore == 0 && ruScore == 0 {
-			azScore = 0.45
-			ruScore = 0.55
+			azScore = cyrillicAzBias
+			ruScore = cyrillicRuBias
 		}
 		// English and Turkish do not use Cyrillic.
 		enScore = 0
@@ -276,16 +300,17 @@ func detectAll(s string) []Result {
 
 		if azLatinUniqueCount > 0 {
 			// Schwa (ə/Ə) is exclusive to Azerbaijani Latin — strong signal.
-			azScore = float64(azLatinUniqueCount) * 10
-			trScore = float64(trAzSharedCount) * 0.1
+			azScore = float64(azLatinUniqueCount) * schwaMultiplier
+			trScore = float64(trAzSharedCount) * sharedTurkicDampener
 		} else if trAzSharedCount > 0 {
 			// Shared Turkic special characters present but no schwa — ambiguous.
 			// Use trigram cosine similarity to break the tie.
-			azTrigram := trigramScore(s, azLatnTrigrams)
-			trTrigram := trigramScore(s, trTrigrams)
+			inputTrigrams := extractTrigrams(s)
+			azTrigram := trigramCosine(inputTrigrams, azLatnTrigrams, azLatnTrigramNorm)
+			trTrigram := trigramCosine(inputTrigrams, trTrigrams, trTrigramNorm)
 
 			// x/q letters are a secondary Azerbaijani signal.
-			xqBoost := float64(xqCount) * 0.5
+			xqBoost := float64(xqCount) * xqBoostPerChar
 
 			azScore = azTrigram + xqBoost
 			trScore = trTrigram
@@ -298,7 +323,7 @@ func detectAll(s string) []Result {
 			enScore = float64(asciiLetters) / float64(totalLetters)
 		} else {
 			// Turkic markers are present — dampen English score strongly.
-			enScore = float64(asciiLetters) / float64(totalLetters) * 0.05
+			enScore = float64(asciiLetters) / float64(totalLetters) * englishTurkicDampener
 		}
 
 		ruScore = 0
@@ -317,13 +342,9 @@ func detectAll(s string) []Result {
 		{Lang: Turkish, Script: ScriptLatn, Confidence: trScore / total},
 	}
 
-	sort.SliceStable(results, func(i, j int) bool {
-		return results[i].Confidence > results[j].Confidence
+	slices.SortStableFunc(results, func(a, b Result) int {
+		return cmp.Compare(b.Confidence, a.Confidence)
 	})
-
-	// Fix Script for languages with zero confidence that ended up in the list.
-	// Russian always uses Cyrillic and English/Turkish always use Latin regardless
-	// of the dominant script detected for the input — already set above correctly.
 
 	return results
 }

@@ -2,6 +2,7 @@ package datetime
 
 import (
 	"cmp"
+	"regexp"
 	"slices"
 	"strconv"
 	"strings"
@@ -24,9 +25,10 @@ func extract(s string, ref time.Time) []Result {
 	all := make([]Result, 0, len(s)/100+minCap)
 
 	words := splitWords(s)
+	lower := azLower(s)
 
 	all = appendNumeric(all, s, ref)
-	all = appendText(all, s, words, ref)
+	all = appendText(all, s, lower, words, ref)
 	all = appendRelative(all, s, words, ref)
 
 	if len(all) == 0 {
@@ -40,68 +42,29 @@ func extract(s string, ref time.Time) []Result {
 
 // ---------- appendNumeric ----------
 
+// Capture group indices for date regexes (1-based submatch positions).
+const (
+	grpFirst  = 1 // first capture group
+	grpSecond = 2 // second capture group
+	grpThird  = 3 // third capture group
+)
+
 // appendNumeric matches ISO, dot, slash date formats and HH:MM(:SS) times.
 func appendNumeric(all []Result, s string, ref time.Time) []Result {
-	all = appendISO(all, s, ref)
-	all = appendDotDate(all, s, ref)
-	all = appendSlashDate(all, s, ref)
+	all = appendRegexDate(all, s, reISO, grpFirst, grpSecond, grpThird)   // YYYY-MM-DD
+	all = appendRegexDate(all, s, reDot, grpThird, grpSecond, grpFirst)   // DD.MM.YYYY
+	all = appendRegexDate(all, s, reSlash, grpThird, grpSecond, grpFirst) // DD/MM/YYYY
 	all = appendTimeFmt(all, s, ref)
 	return all
 }
 
-func appendISO(all []Result, s string, _ time.Time) []Result {
-	for _, m := range reISO.FindAllStringSubmatchIndex(s, -1) {
-		yearStr := s[m[2]:m[3]]
-		monthStr := s[m[4]:m[5]]
-		dayStr := s[m[6]:m[7]]
-
-		year, month, day, ok := parseDateParts(yearStr, monthStr, dayStr)
-		if !ok {
-			continue
-		}
-
-		t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-		all = append(all, Result{
-			Text:     s[m[0]:m[1]],
-			Start:    m[0],
-			End:      m[1],
-			Type:     TypeDate,
-			Time:     t,
-			Explicit: HasYear | HasMonth | HasDay,
-		})
-	}
-	return all
-}
-
-func appendDotDate(all []Result, s string, _ time.Time) []Result {
-	for _, m := range reDot.FindAllStringSubmatchIndex(s, -1) {
-		dayStr := s[m[2]:m[3]]
-		monthStr := s[m[4]:m[5]]
-		yearStr := s[m[6]:m[7]]
-
-		year, month, day, ok := parseDateParts(yearStr, monthStr, dayStr)
-		if !ok {
-			continue
-		}
-
-		t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
-		all = append(all, Result{
-			Text:     s[m[0]:m[1]],
-			Start:    m[0],
-			End:      m[1],
-			Type:     TypeDate,
-			Time:     t,
-			Explicit: HasYear | HasMonth | HasDay,
-		})
-	}
-	return all
-}
-
-func appendSlashDate(all []Result, s string, _ time.Time) []Result {
-	for _, m := range reSlash.FindAllStringSubmatchIndex(s, -1) {
-		dayStr := s[m[2]:m[3]]
-		monthStr := s[m[4]:m[5]]
-		yearStr := s[m[6]:m[7]]
+// appendRegexDate extracts dates from s using re whose capture groups at
+// yearIdx, monthIdx, dayIdx (1-based) hold year, month, and day strings.
+func appendRegexDate(all []Result, s string, re *regexp.Regexp, yearIdx, monthIdx, dayIdx int) []Result {
+	for _, m := range re.FindAllStringSubmatchIndex(s, -1) {
+		yearStr := s[m[yearIdx*2]:m[yearIdx*2+1]]
+		monthStr := s[m[monthIdx*2]:m[monthIdx*2+1]]
+		dayStr := s[m[dayIdx*2]:m[dayIdx*2+1]]
 
 		year, month, day, ok := parseDateParts(yearStr, monthStr, dayStr)
 		if !ok {
@@ -160,6 +123,7 @@ func appendTimeFmt(all []Result, s string, ref time.Time) []Result {
 }
 
 // parseDateParts validates and converts year/month/day strings to integers.
+// Rejects impossible calendar dates like Feb 30 by checking time.Date normalization.
 func parseDateParts(yearStr, monthStr, dayStr string) (year, month, day int, ok bool) {
 	var err error
 	year, err = strconv.Atoi(yearStr)
@@ -174,6 +138,12 @@ func parseDateParts(yearStr, monthStr, dayStr string) (year, month, day int, ok 
 	if err != nil || day < minDay || day > maxDay {
 		return 0, 0, 0, false
 	}
+	// Reject impossible calendar dates (e.g. Feb 30): time.Date normalizes
+	// overflows, so a mismatch means the input date does not exist.
+	t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+	if t.Day() != day || t.Month() != time.Month(month) {
+		return 0, 0, 0, false
+	}
 	return year, month, day, true
 }
 
@@ -181,7 +151,7 @@ func parseDateParts(yearStr, monthStr, dayStr string) (year, month, day int, ok 
 
 // appendText matches natural Azerbaijani text patterns:
 // month names (with optional day/year), weekday names, and "saat" + number.
-func appendText(all []Result, s string, words []wordSpan, ref time.Time) []Result {
+func appendText(all []Result, s, lower string, words []wordSpan, ref time.Time) []Result {
 	used := make([]bool, len(words))
 
 	// Pass 1: month-based patterns (highest priority for text matching)
@@ -276,7 +246,7 @@ func appendText(all []Result, s string, words []wordSpan, ref time.Time) []Resul
 	}
 
 	// Pass 2: weekday names
-	all = appendWeekdays(all, s, words, used, ref)
+	all = appendWeekdays(all, s, lower, words, used, ref)
 
 	// Pass 3: "saat" + number (time-of-day, not duration context)
 	all = appendSaatTime(all, s, words, used, ref)
@@ -285,8 +255,7 @@ func appendText(all []Result, s string, words []wordSpan, ref time.Time) []Resul
 }
 
 // appendWeekdays matches Azerbaijani weekday names in the word list.
-func appendWeekdays(all []Result, s string, words []wordSpan, used []bool, ref time.Time) []Result {
-	lower := azLower(s)
+func appendWeekdays(all []Result, s, lower string, words []wordSpan, used []bool, ref time.Time) []Result {
 	for _, wd := range weekdays {
 		// Search for each weekday name in the lowered full string.
 		offset := 0
@@ -385,7 +354,7 @@ func appendSaatTime(all []Result, s string, words []wordSpan, used []bool, ref t
 		// Check for time-of-day modifier before "saat" (e.g. "axşam saat 7").
 		if i > 0 && !used[i-1] {
 			if shift, ok := timeOfDayWords[words[i-1].lower]; ok {
-				if shift == shiftPM && hour <= 12 && hour > 0 {
+				if shift == shiftPM && hour < 12 && hour > 0 {
 					hour += 12
 				}
 				spanStart = words[i-1].start
@@ -858,11 +827,6 @@ func parseBareNumber(s string) (int, bool) {
 	if s == "" || len(s) > 2 {
 		return 0, false
 	}
-	for _, c := range s {
-		if c < '0' || c > '9' {
-			return 0, false
-		}
-	}
 	n, err := strconv.Atoi(s)
 	if err != nil {
 		return 0, false
@@ -874,11 +838,6 @@ func parseBareNumber(s string) (int, bool) {
 func parse4DigitYear(s string) (int, bool) {
 	if len(s) != 4 { //nolint:mnd
 		return 0, false
-	}
-	for _, c := range s {
-		if c < '0' || c > '9' {
-			return 0, false
-		}
 	}
 	n, err := strconv.Atoi(s)
 	if err != nil || n < minYear || n > maxYear {

@@ -810,6 +810,20 @@ func TestExtractSaatTime(t *testing.T) {
 				Explicit: HasHour,
 			}},
 		},
+		{
+			// "axşam saat 12" — hour 12 with PM modifier must stay 12, not become 24.
+			name: "axşam saat 12 noon edge",
+			in:   "axşam saat 12",
+			ref:  ref,
+			want: []Result{{
+				Text:     "axşam saat 12",
+				Start:    0,
+				End:      14,
+				Type:     TypeTime,
+				Time:     dt(ref.Year(), ref.Month(), ref.Day(), 12, 0, 0),
+				Explicit: HasHour,
+			}},
+		},
 	}
 
 	for _, tt := range tests {
@@ -1016,6 +1030,35 @@ func TestExtractNegative(t *testing.T) {
 			in:      "abc xyz",
 			ref:     ref,
 			wantNil: true,
+		},
+		{
+			// Feb 30 is impossible — should be rejected, not normalized.
+			name:    "impossible date Feb 30",
+			in:      "30.02.2026",
+			ref:     ref,
+			wantNil: true,
+		},
+		{
+			// Apr 31 is impossible.
+			name:    "impossible date Apr 31",
+			in:      "31.04.2026",
+			ref:     ref,
+			wantNil: true,
+		},
+		{
+			// Feb 29 on a non-leap year (2026) is impossible.
+			name:    "impossible date Feb 29 non-leap",
+			in:      "29.02.2026",
+			ref:     ref,
+			wantNil: true,
+		},
+		{
+			// Feb 29 on a leap year (2024) is valid.
+			name:       "valid date Feb 29 leap year",
+			in:         "29.02.2024",
+			ref:        ref,
+			wantNil:    false,
+			rejectText: "",
 		},
 	}
 
@@ -1287,6 +1330,39 @@ func BenchmarkExtract(b *testing.B) {
 	r := time.Date(2026, 2, 20, 0, 0, 0, 0, time.UTC)
 	for b.Loop() {
 		Extract("5 mart 2026 saat 14:30, sabah görüşərik", r)
+	}
+}
+
+// BenchmarkExtractLong benchmarks Extract on a long multi-match input.
+func BenchmarkExtractLong(b *testing.B) {
+	r := time.Date(2026, 2, 20, 0, 0, 0, 0, time.UTC)
+	input := strings.Repeat("Görüş 5 mart 2026 saat 14:30, sabah 10:00-da davam edəcək. ", 20)
+	b.SetBytes(int64(len(input)))
+	b.ResetTimer()
+	for b.Loop() {
+		Extract(input, r)
+	}
+}
+
+// BenchmarkExtractRelative benchmarks Extract on relative expressions only.
+func BenchmarkExtractRelative(b *testing.B) {
+	r := time.Date(2026, 2, 20, 0, 0, 0, 0, time.UTC)
+	input := "sabah axşam görüşərik, birisi gün hazır olacaq"
+	b.SetBytes(int64(len(input)))
+	b.ResetTimer()
+	for b.Loop() {
+		Extract(input, r)
+	}
+}
+
+// BenchmarkExtractNumeric benchmarks Extract on numeric date/time formats only.
+func BenchmarkExtractNumeric(b *testing.B) {
+	r := time.Date(2026, 2, 20, 0, 0, 0, 0, time.UTC)
+	input := "2026-03-05 14:30 tarixində 21.06.2026 və 01/01/2027"
+	b.SetBytes(int64(len(input)))
+	b.ResetTimer()
+	for b.Loop() {
+		Extract(input, r)
 	}
 }
 

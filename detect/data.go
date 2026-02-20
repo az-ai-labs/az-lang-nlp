@@ -3,59 +3,8 @@ package detect
 import (
 	"math"
 	"unicode"
+	"unicode/utf8"
 )
-
-// --- Character-set maps ---
-
-// azLatinUnique contains characters unique to Azerbaijani Latin script that
-// do not appear in Turkish or English. The schwa (ə/Ə) is the single strongest
-// discriminator between Azerbaijani and Turkish Latin texts.
-var azLatinUnique = map[rune]bool{
-	'ə': true, 'Ə': true, // U+0259, U+018F — schwa, exclusive to Azerbaijani Latin
-}
-
-// azCyrillicUnique contains characters unique to Azerbaijani Cyrillic that
-// are absent from Russian Cyrillic. Presence of any of these characters is a
-// strong signal that the text is Azerbaijani Cyrillic.
-var azCyrillicUnique = map[rune]bool{
-	'ә': true, 'Ә': true, // U+04D9, U+04D8 — schwa (Azerbaijani ə in Cyrillic)
-	'ғ': true, 'Ғ': true, // U+0493, U+0492 — Ğ equivalent
-	'ҹ': true, 'Ҹ': true, // U+04B9, U+04B8 — C equivalent
-	'ҝ': true, 'Ҝ': true, // U+049D, U+049C — G equivalent
-	'ө': true, 'Ө': true, // U+04E9, U+04E8 — Ö equivalent
-	'ү': true, 'Ү': true, // U+04AF, U+04AE — Ü equivalent
-	'һ': true, 'Һ': true, // U+04BB, U+04BA — H equivalent
-	'ј': true, 'Ј': true, // U+0458, U+0408 — Y/Je equivalent
-}
-
-// ruCyrillicUnique contains characters present in Russian Cyrillic but absent
-// from Azerbaijani Cyrillic. These are strong negative signals for Azerbaijani
-// and positive signals for Russian.
-var ruCyrillicUnique = map[rune]bool{
-	'ы': true, 'Ы': true, // U+044B, U+042B — back unrounded vowel, Russian only
-	'э': true, 'Э': true, // U+044D, U+042D — open e, Russian only
-	'щ': true, 'Щ': true, // U+0449, U+0429 — shcha, Russian only
-}
-
-// trAzSharedSpecial contains special Latin characters shared between Turkish
-// and Azerbaijani Latin scripts. Their presence indicates a Turkic language
-// but does not distinguish Azerbaijani from Turkish on its own.
-var trAzSharedSpecial = map[rune]bool{
-	'ğ': true, 'Ğ': true, // U+011F, U+011E — soft g
-	'ş': true, 'Ş': true, // U+015F, U+015E — sh sound
-	'ç': true, 'Ç': true, // U+00E7, U+00C7 — ch sound
-	'ö': true, 'Ö': true, // U+00F6, U+00D6 — front rounded o
-	'ü': true, 'Ü': true, // U+00FC, U+00DC — front rounded u
-	'ı': true, 'İ': true, // U+0131, U+0130 — dotless i / dotted I
-}
-
-// azLatinXQ contains Latin letters that are common in Azerbaijani texts but
-// rare in Turkish. Q (representing the uvular stop) and X (representing the
-// velar fricative) appear frequently in native Azerbaijani vocabulary.
-var azLatinXQ = map[rune]bool{
-	'x': true, 'X': true, // U+0078, U+0058 — velar fricative, frequent in Azerbaijani
-	'q': true, 'Q': true, // U+0071, U+0051 — uvular stop, frequent in Azerbaijani
-}
 
 // isCyrillic reports whether r is a Cyrillic letter (Unicode block U+0400..U+04FF).
 func isCyrillic(r rune) bool {
@@ -196,6 +145,21 @@ var trTrigrams = map[string]float64{
 	"rdi": 0.000550,
 }
 
+// Pre-computed L2 norms for trigram profile vectors.
+var (
+	azLatnTrigramNorm = profileNorm(azLatnTrigrams)
+	trTrigramNorm     = profileNorm(trTrigrams)
+)
+
+// profileNorm computes the L2 norm of a frequency profile.
+func profileNorm(profile map[string]float64) float64 {
+	var sum float64
+	for _, v := range profile {
+		sum += v * v
+	}
+	return math.Sqrt(sum)
+}
+
 // --- Trigram functions ---
 
 // extractTrigrams builds a frequency map of character trigrams from s,
@@ -205,7 +169,7 @@ var trTrigrams = map[string]float64{
 // Letters are lowercased using Turkic-aware rules (İ→i, I→ı) to match
 // the lowercase trigram profiles.
 func extractTrigrams(s string) map[string]float64 {
-	letters := make([]rune, 0, len(s))
+	letters := make([]rune, 0, utf8.RuneCountInString(s))
 	for _, r := range s {
 		if unicode.IsLetter(r) {
 			letters = append(letters, toLowerTurkic(r))
@@ -229,17 +193,16 @@ func extractTrigrams(s string) map[string]float64 {
 	return counts
 }
 
-// trigramScore computes the cosine similarity between the trigram profile of s
-// (considering only letter runes) and the reference profile.
+// trigramCosine computes the cosine similarity between a pre-built input
+// trigram frequency map and the reference profile, using the pre-computed
+// profile L2 norm.
 // Returns a value in [0.0, 1.0].
-// Returns 0.0 when s contains fewer than 3 letter runes.
-func trigramScore(s string, profile map[string]float64) float64 {
-	input := extractTrigrams(s)
+func trigramCosine(input, profile map[string]float64, profNorm float64) float64 {
 	if len(input) == 0 {
 		return 0.0
 	}
 
-	var dot, normInput, normProfile float64
+	var dot, normInput float64
 
 	for trigram, inputFreq := range input {
 		normInput += inputFreq * inputFreq
@@ -248,11 +211,7 @@ func trigramScore(s string, profile map[string]float64) float64 {
 		}
 	}
 
-	for _, profileFreq := range profile {
-		normProfile += profileFreq * profileFreq
-	}
-
-	denom := math.Sqrt(normInput) * math.Sqrt(normProfile)
+	denom := math.Sqrt(normInput) * profNorm
 	if denom == 0 {
 		return 0.0
 	}
