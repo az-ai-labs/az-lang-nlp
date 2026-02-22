@@ -14,7 +14,7 @@ const minLineLen = 2
 
 // Parsed dictionary data, populated by init().
 var (
-	dictLemmas []string       // sorted lemmas, kept for test integrity checks
+	dictLemmas []string        // sorted lemmas, kept for test integrity checks
 	dictMap    map[string]byte // stem -> POS byte for O(1) lookups
 )
 
