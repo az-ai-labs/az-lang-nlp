@@ -91,3 +91,12 @@ jobs:
 
       - name: Fuzz spell Correct
         run: go test ./spell/ -fuzz=FuzzCorrect -fuzztime=10s -parallel=1
+
+      - name: Fuzz keywords ExtractTFIDF
+        run: go test ./keywords/ -fuzz=FuzzExtractTFIDF -fuzztime=10s -parallel=1
+
+      - name: Fuzz keywords ExtractTextRank
+        run: go test ./keywords/ -fuzz=FuzzExtractTextRank -fuzztime=10s -parallel=1
+
+      - name: Fuzz keywords Keywords
+        run: go test ./keywords/ -fuzz=FuzzKeywords -fuzztime=10s -parallel=1
