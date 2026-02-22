@@ -270,6 +270,12 @@ func appendWeekdays(all []Result, s, lower string, words []wordSpan, used []bool
 			matchEnd := matchStart + len(wd.name)
 			offset = matchEnd
 
+			// Guard: Turkic lowering can change byte length (I↔ı),
+			// so positions from lower may exceed bounds of s.
+			if matchEnd > len(s) {
+				break
+			}
+
 			// Verify word boundaries: character before must not be a letter,
 			// character after must not be a letter.
 			if matchStart > 0 {
