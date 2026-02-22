@@ -3,6 +3,8 @@ package keywords
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
+	"math"
 	"os"
 	"testing"
 )
@@ -47,16 +49,12 @@ func TestGolden(t *testing.T) {
 			gotTextRank := ExtractTextRank(tc.Input, 5)
 			gotKeywords := Keywords(tc.Input)
 
-			tfidfJSON, _ := json.Marshal(gotTFIDF)
-			wantTFIDFJSON, _ := json.Marshal(tc.WantTFIDF)
-			if string(tfidfJSON) != string(wantTFIDFJSON) {
-				t.Errorf("ExtractTFIDF(%q):\n  got  %s\n  want %s", tc.Name, tfidfJSON, wantTFIDFJSON)
+			if msg := diffKeywords(gotTFIDF, tc.WantTFIDF); msg != "" {
+				t.Errorf("ExtractTFIDF(%q): %s", tc.Name, msg)
 			}
 
-			trJSON, _ := json.Marshal(gotTextRank)
-			wantTRJSON, _ := json.Marshal(tc.WantTextRank)
-			if string(trJSON) != string(wantTRJSON) {
-				t.Errorf("ExtractTextRank(%q):\n  got  %s\n  want %s", tc.Name, trJSON, wantTRJSON)
+			if msg := diffKeywords(gotTextRank, tc.WantTextRank); msg != "" {
+				t.Errorf("ExtractTextRank(%q): %s", tc.Name, msg)
 			}
 
 			kwJSON, _ := json.Marshal(gotKeywords)
@@ -100,4 +98,29 @@ func updateGoldenFile(t *testing.T) {
 	}
 
 	t.Log("golden file updated, review with: git diff data/golden/keywords.json")
+}
+
+// scoreEpsilon tolerates cross-platform float64 non-determinism
+// (last significant digit may differ between macOS and Linux).
+const scoreEpsilon = 1e-13
+
+func diffKeywords(got, want []Keyword) string {
+	if len(got) != len(want) {
+		gotJSON, _ := json.Marshal(got)
+		wantJSON, _ := json.Marshal(want)
+		return "length mismatch:\n  got  " + string(gotJSON) + "\n  want " + string(wantJSON)
+	}
+	for i := range got {
+		if got[i].Stem != want[i].Stem || got[i].Count != want[i].Count {
+			gotJSON, _ := json.Marshal(got)
+			wantJSON, _ := json.Marshal(want)
+			return fmt.Sprintf("stem/count mismatch at [%d]:\n  got  %s\n  want %s", i, gotJSON, wantJSON)
+		}
+		if math.Abs(got[i].Score-want[i].Score) > scoreEpsilon {
+			gotJSON, _ := json.Marshal(got)
+			wantJSON, _ := json.Marshal(want)
+			return fmt.Sprintf("score mismatch at [%d]:\n  got  %s\n  want %s", i, gotJSON, wantJSON)
+		}
+	}
+	return ""
 }
