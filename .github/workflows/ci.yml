@@ -100,3 +100,6 @@ jobs:
 
       - name: Fuzz keywords Keywords
         run: go test ./keywords/ -fuzz=FuzzKeywords -fuzztime=10s -parallel=1
+
+      - name: Fuzz validate
+        run: go test ./validate/ -fuzz=FuzzValidate -fuzztime=10s -parallel=1

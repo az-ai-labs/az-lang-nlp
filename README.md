@@ -23,6 +23,7 @@ All packages are safe for concurrent use.
 | [spell](#spell-checker)          | Spell checking (SymSpell algorithm)                     |
 | [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
 | [keywords](#keyword-extraction)  | Keyword extraction (TF-IDF / TextRank)                  |
+| [validate](#text-validation)     | Text quality validation (spelling, punctuation, layout) |
 
 ## Install
 
@@ -278,9 +279,32 @@ keywords.Keywords("Azərbaycan iqtisadiyyatı sürətlə inkişaf edir")
 
 Integrates with `normalize` for diacritic restoration, `tokenizer` for word splitting, and `morph` for stemming. Inflected forms ("kitab", "kitablar", "kitabdan") group under a single stem. Stopwords (pronouns, conjunctions, particles, auxiliaries) are filtered after stemming. Input longer than 1 MiB returns nil.
 
-## Planned
+## Text Validation
 
-- **validate** — text validator (spelling + punctuation + layout)
+Validate Azerbaijani text quality: spelling, punctuation, keyboard layout errors (homoglyphs), and mixed script detection.
+
+```go
+// Full validation with quality score and positioned issues
+report := validate.Validate("Bu ketab ,gözəldir.")
+fmt.Println(report.Score)
+// 87
+
+for _, issue := range report.Issues {
+    fmt.Printf("[%s] %q: %s", issue.Type, issue.Text, issue.Message)
+    if issue.Suggestion != "" {
+        fmt.Printf(" (suggest: %q)", issue.Suggestion)
+    }
+    fmt.Println()
+}
+// [spelling] "ketab": unknown word (suggest: "kitab")
+// [punctuation] " ": space before punctuation
+
+// Quick validity check (no error-severity issues)
+validate.IsValid("Bu kitab gözəldir.") // true
+validate.IsValid("Bu ketab gözəldir.") // false
+```
+
+Returns a quality score (0-100) with weighted deductions: error -10, warning -3, info -1. Checks four categories: spelling errors via `spell.IsCorrect`, punctuation issues (spacing, repetition), keyboard layout errors (Cyrillic/Latin homoglyph detection), and mixed script usage. Title-case unknown words are skipped as likely proper nouns. Issues include byte offsets for editor integration. Input longer than 1 MiB returns score 100 with no issues.
 
 ## License
 
