@@ -82,3 +82,12 @@ jobs:
 
       - name: Fuzz normalize word
         run: go test ./normalize/ -fuzz=FuzzNormalizeWord$ -fuzztime=10s -parallel=1
+
+      - name: Fuzz spell IsCorrect
+        run: go test ./spell/ -fuzz=FuzzIsCorrect -fuzztime=10s -parallel=1
+
+      - name: Fuzz spell Suggest
+        run: go test ./spell/ -fuzz=FuzzSuggest -fuzztime=10s -parallel=1
+
+      - name: Fuzz spell Correct
+        run: go test ./spell/ -fuzz=FuzzCorrect -fuzztime=10s -parallel=1

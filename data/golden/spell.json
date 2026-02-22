@@ -1,0 +1,154 @@
+[
+  {
+    "name": "known_kitab",
+    "input": "kitab",
+    "want_is_correct": true,
+    "want_correct_word": "kitab",
+    "want_correct_text": "kitab",
+    "word_only": false
+  },
+  {
+    "name": "known_ev",
+    "input": "ev",
+    "want_is_correct": true,
+    "want_correct_word": "ev",
+    "want_correct_text": "ev",
+    "word_only": false
+  },
+  {
+    "name": "known_su",
+    "input": "su",
+    "want_is_correct": true,
+    "want_correct_word": "su",
+    "want_correct_text": "su",
+    "word_only": false
+  },
+  {
+    "name": "known_gozel",
+    "input": "gözəl",
+    "want_is_correct": true,
+    "want_correct_word": "gözəl",
+    "want_correct_text": "gözəl",
+    "word_only": false
+  },
+  {
+    "name": "known_yazir",
+    "input": "yazır",
+    "want_is_correct": true,
+    "want_correct_word": "yazır",
+    "want_correct_text": "yazır",
+    "word_only": false
+  },
+  {
+    "name": "inflected_kitablar",
+    "input": "kitablar",
+    "want_is_correct": true,
+    "want_correct_word": "kitablar",
+    "want_correct_text": "kitablar",
+    "word_only": false
+  },
+  {
+    "name": "inflected_evlerde",
+    "input": "evlərdə",
+    "want_is_correct": true,
+    "want_correct_word": "evlərdə",
+    "want_correct_text": "evlərdə",
+    "word_only": false
+  },
+  {
+    "name": "inflected_yazdilar",
+    "input": "yazdılar",
+    "want_is_correct": true,
+    "want_correct_word": "yazdılar",
+    "want_correct_text": "yazdılar",
+    "word_only": false
+  },
+  {
+    "name": "ascii_gozel",
+    "input": "gozel",
+    "want_is_correct": true,
+    "want_correct_word": "gozel",
+    "want_correct_text": "gozel",
+    "word_only": false
+  },
+  {
+    "name": "ascii_soz",
+    "input": "soz",
+    "want_is_correct": true,
+    "want_correct_word": "soz",
+    "want_correct_text": "soz",
+    "word_only": false
+  },
+  {
+    "name": "ascii_dovlet",
+    "input": "dovlet",
+    "want_is_correct": true,
+    "want_correct_word": "dovlet",
+    "want_correct_text": "dovlet",
+    "word_only": false
+  },
+  {
+    "name": "misspelled_ketab",
+    "input": "ketab",
+    "want_is_correct": false,
+    "want_correct_word": "kitab",
+    "want_correct_text": "kitab",
+    "word_only": false
+  },
+  {
+    "name": "edge_empty",
+    "input": "",
+    "want_is_correct": true,
+    "want_correct_word": "",
+    "want_correct_text": "",
+    "word_only": true
+  },
+  {
+    "name": "edge_too_short",
+    "input": "a",
+    "want_is_correct": true,
+    "want_correct_word": "a",
+    "want_correct_text": "a",
+    "word_only": true
+  },
+  {
+    "name": "edge_unknown",
+    "input": "xyzabc",
+    "want_is_correct": false,
+    "want_correct_word": "xyzabc",
+    "want_correct_text": "xyzabc",
+    "word_only": true
+  },
+  {
+    "name": "case_upper_ketab",
+    "input": "KETAB",
+    "want_is_correct": false,
+    "want_correct_word": "KİTAB",
+    "want_correct_text": "KITAB",
+    "word_only": true
+  },
+  {
+    "name": "case_title_ketab",
+    "input": "Ketab",
+    "want_is_correct": false,
+    "want_correct_word": "Kitab",
+    "want_correct_text": "Ketab",
+    "word_only": true
+  },
+  {
+    "name": "hyphenated_sosial_iqtisadi",
+    "input": "sosial-iqtisadi",
+    "want_is_correct": true,
+    "want_correct_word": "sosial-iqtisadi",
+    "want_correct_text": "sosial-iqtisadi",
+    "word_only": true
+  },
+  {
+    "name": "fulltext_ketab_gozeldir",
+    "input": "Bu ketab gozeldir",
+    "want_is_correct": false,
+    "want_correct_word": "Bu ketab gozeldir",
+    "want_correct_text": "Bu kitab gözəldir",
+    "word_only": false
+  }
+]

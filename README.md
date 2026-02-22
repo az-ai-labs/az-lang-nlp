@@ -20,6 +20,7 @@ All packages are safe for concurrent use.
 | [ner](#named-entity-recognition) | FIN, VOEN, phone, email, IBAN, plate, URL extraction    |
 | [datetime](#datetime)            | Date/time parser ("5 mart 2026" &rarr; structured)      |
 | [normalize](#text-normalization) | Diacritic restoration ("gozel" &rarr; "g&ouml;z&auml;l")            |
+| [spell](#spell-checker)          | Spell checking (SymSpell algorithm)                     |
 | [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
 
 ## Install
@@ -195,6 +196,33 @@ normalize.NormalizeWord("GOZEL")
 
 Uses dictionary lookup against the morph package's ~12K stem dictionary to find unambiguous diacritic restorations. Words with multiple possible restorations or not found in the dictionary are returned unchanged. Handles hyphenated words and apostrophe suffixes. Input longer than 1 MiB is returned unchanged.
 
+## Spell Checker
+
+Check and correct spelling errors in Azerbaijani text using the SymSpell algorithm with morphology-aware validation.
+
+```go
+// Check if a word is correctly spelled
+spell.IsCorrect("kitab")    // true
+spell.IsCorrect("ketab")    // false
+spell.IsCorrect("kitablar") // true (morphologically valid)
+spell.IsCorrect("gozel")    // true (normalizable to gözəl)
+
+// Get correction suggestions
+suggestions := spell.Suggest("ketab", 2)
+fmt.Println(suggestions[0].Term, suggestions[0].Distance)
+// kitab 1
+
+// Correct a single word (preserves case)
+spell.CorrectWord("ketab")  // kitab
+spell.CorrectWord("KETAB")  // KİTAB
+
+// Correct all misspelled words in text
+spell.Correct("Bu ketab gozeldir")
+// Bu kitab gozeldir
+```
+
+Uses an embedded frequency dictionary (~86K entries from a 1.25 GB Azerbaijani corpus) with the SymSpell symmetric delete algorithm for sub-microsecond lookups. Validates words through frequency dictionary, morphological analysis, and diacritic normalization. Handles hyphenated words, apostrophe suffixes, and case preservation. Title-case unknown words are left unchanged to avoid over-correcting proper nouns.
+
 ## Language Detection
 
 Identify the language of input text: Azerbaijani, Russian, English, or Turkish.
@@ -223,7 +251,6 @@ Uses hybrid character-set scoring with trigram fallback for ambiguous cases (Aze
 
 ## Planned
 
-- **spell** — spell checker (SymSpell algorithm)
 - **keywords** — keyword extraction (TF-IDF / TextRank)
 - **validate** — text validator (spelling + punctuation + layout)
 
