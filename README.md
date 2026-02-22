@@ -22,6 +22,7 @@ All packages are safe for concurrent use.
 | [normalize](#text-normalization) | Diacritic restoration ("gozel" &rarr; "g&ouml;z&auml;l")            |
 | [spell](#spell-checker)          | Spell checking (SymSpell algorithm)                     |
 | [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
+| [keywords](#keyword-extraction)  | Keyword extraction (TF-IDF / TextRank)                  |
 
 ## Install
 
@@ -249,9 +250,36 @@ for _, r := range detect.DetectAll("Привет, как дела?") {
 
 Uses hybrid character-set scoring with trigram fallback for ambiguous cases (Azerbaijani vs Turkish). Supports Azerbaijani in both Latin and Cyrillic scripts. Input longer than 1 MiB is silently truncated.
 
+## Keyword Extraction
+
+Extract keywords from Azerbaijani text using TF-IDF or TextRank algorithms.
+
+```go
+// Structured: TF-IDF scored keywords
+for _, kw := range keywords.ExtractTFIDF("Azərbaycan iqtisadiyyatı sürətlə inkişaf edir. Azərbaycan neft sektorunda liderdir.", 3) {
+    fmt.Printf("%s (score=%.2f, count=%d)\n", kw.Stem, kw.Score, kw.Count)
+}
+// azərbaycan (score=1.41, count=2)
+// sektor (score=1.25, count=1)
+// lider (score=1.11, count=1)
+
+// Structured: TextRank scored keywords
+for _, kw := range keywords.ExtractTextRank("Azərbaycan iqtisadiyyatı sürətlə inkişaf edir", 3) {
+    fmt.Printf("%s (score=%.2f)\n", kw.Stem, kw.Score)
+}
+// iqtisadiyyat (score=0.30)
+// sürət (score=0.30)
+// azərbaycan (score=0.20)
+
+// Convenience: top 10 keyword stems via TextRank
+keywords.Keywords("Azərbaycan iqtisadiyyatı sürətlə inkişaf edir")
+// [iqtisadiyyat sürət azərbaycan inkişaf]
+```
+
+Integrates with `normalize` for diacritic restoration, `tokenizer` for word splitting, and `morph` for stemming. Inflected forms ("kitab", "kitablar", "kitabdan") group under a single stem. Stopwords (pronouns, conjunctions, particles, auxiliaries) are filtered after stemming. Input longer than 1 MiB returns nil.
+
 ## Planned
 
-- **keywords** — keyword extraction (TF-IDF / TextRank)
 - **validate** — text validator (spelling + punctuation + layout)
 
 ## License

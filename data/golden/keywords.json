@@ -1,0 +1,316 @@
+[
+  {
+    "name": "simple sentence",
+    "input": "Azərbaycan iqtisadiyyatı sürətlə inkişaf edir",
+    "want_tfidf": [
+      {
+        "stem": "iqtisadiyyat",
+        "score": 2.1452124689789276,
+        "count": 1
+      },
+      {
+        "stem": "sürət",
+        "score": 2.034796665913455,
+        "count": 1
+      },
+      {
+        "stem": "inkişaf",
+        "score": 1.8190082889792392,
+        "count": 1
+      },
+      {
+        "stem": "azərbaycan",
+        "score": 1.4098699722185124,
+        "count": 1
+      }
+    ],
+    "want_textrank": [
+      {
+        "stem": "iqtisadiyyat",
+        "score": 0.29524085395269667,
+        "count": 1
+      },
+      {
+        "stem": "sürət",
+        "score": 0.29524085395269667,
+        "count": 1
+      },
+      {
+        "stem": "azərbaycan",
+        "score": 0.20475914604730314,
+        "count": 1
+      },
+      {
+        "stem": "inkişaf",
+        "score": 0.20475914604730314,
+        "count": 1
+      }
+    ],
+    "want_keywords": [
+      "iqtisadiyyat",
+      "sürət",
+      "azərbaycan",
+      "inkişaf"
+    ]
+  },
+  {
+    "name": "repeated keyword",
+    "input": "Kitab oxumaq faydalıdır. Kitab bilik mənbəyidir. Kitab insanı inkişaf etdirir.",
+    "want_tfidf": [
+      {
+        "stem": "kitab",
+        "score": 2.235850227812115,
+        "count": 3
+      },
+      {
+        "stem": "oxumaq",
+        "score": 1.0763569173709464,
+        "count": 1
+      },
+      {
+        "stem": "faydalı",
+        "score": 1.0077353857842946,
+        "count": 1
+      },
+      {
+        "stem": "mənbəy",
+        "score": 0.9524051431964117,
+        "count": 1
+      },
+      {
+        "stem": "bilik",
+        "score": 0.922811778331457,
+        "count": 1
+      }
+    ],
+    "want_textrank": [
+      {
+        "stem": "kitab",
+        "score": 0.26953499692900484,
+        "count": 3
+      },
+      {
+        "stem": "insan",
+        "score": 0.12579034745319365,
+        "count": 1
+      },
+      {
+        "stem": "mənbəy",
+        "score": 0.1153766096984927,
+        "count": 1
+      },
+      {
+        "stem": "faydalı",
+        "score": 0.11378380269937073,
+        "count": 1
+      },
+      {
+        "stem": "bilik",
+        "score": 0.1132686007246047,
+        "count": 1
+      }
+    ],
+    "want_keywords": [
+      "kitab",
+      "insan",
+      "mənbəy",
+      "faydalı",
+      "bilik",
+      "inkişaf",
+      "oxumaq",
+      "etdir"
+    ]
+  },
+  {
+    "name": "ASCII-degraded input",
+    "input": "Azerbaycan iqtisadiyyati suretla inkisaf edir. Azerbaycan neft olkesidir.",
+    "want_tfidf": [
+      {
+        "stem": "iqtisadiyyati",
+        "score": 2.584290683935684,
+        "count": 1
+      },
+      {
+        "stem": "olke",
+        "score": 2.584290683935684,
+        "count": 1
+      },
+      {
+        "stem": "suretla",
+        "score": 2.584290683935684,
+        "count": 1
+      },
+      {
+        "stem": "azərbaycan",
+        "score": 1.6112799682497283,
+        "count": 2
+      },
+      {
+        "stem": "neft",
+        "score": 1.175934942992056,
+        "count": 1
+      }
+    ],
+    "want_textrank": [
+      {
+        "stem": "azərbaycan",
+        "score": 0.2611272787810485,
+        "count": 2
+      },
+      {
+        "stem": "inkişaf",
+        "score": 0.17904432381035848,
+        "count": 1
+      },
+      {
+        "stem": "suretla",
+        "score": 0.17598628093424182,
+        "count": 1
+      },
+      {
+        "stem": "neft",
+        "score": 0.14369211038446675,
+        "count": 1
+      },
+      {
+        "stem": "iqtisadiyyati",
+        "score": 0.1374364782191449,
+        "count": 1
+      }
+    ],
+    "want_keywords": [
+      "azərbaycan",
+      "inkişaf",
+      "suretla",
+      "neft",
+      "iqtisadiyyati",
+      "olke"
+    ]
+  },
+  {
+    "name": "inflected forms",
+    "input": "kitablar kitabdan kitabların kitablara kitablardan",
+    "want_tfidf": [
+      {
+        "stem": "kitab",
+        "score": 7.45283409270705,
+        "count": 5
+      }
+    ],
+    "want_textrank": [
+      {
+        "stem": "kitab",
+        "score": 0.15,
+        "count": 5
+      }
+    ],
+    "want_keywords": [
+      "kitab"
+    ]
+  },
+  {
+    "name": "all stopwords",
+    "input": "və bu da o ki mən sən biz",
+    "want_tfidf": null,
+    "want_textrank": null,
+    "want_keywords": null
+  },
+  {
+    "name": "empty string",
+    "input": "",
+    "want_tfidf": null,
+    "want_textrank": null,
+    "want_keywords": null
+  },
+  {
+    "name": "single word",
+    "input": "kitab",
+    "want_tfidf": [
+      {
+        "stem": "kitab",
+        "score": 7.45283409270705,
+        "count": 1
+      }
+    ],
+    "want_textrank": [
+      {
+        "stem": "kitab",
+        "score": 0.15,
+        "count": 1
+      }
+    ],
+    "want_keywords": [
+      "kitab"
+    ]
+  },
+  {
+    "name": "multi-topic text",
+    "input": "Bakı şəhərində yeni məktəb açıldı. Məktəbdə müasir texnologiya istifadə olunur. Şagirdlər kompüter dərsləri alır. Müəllimlər yeni proqramlar öyrədir.",
+    "want_tfidf": [
+      {
+        "stem": "məktəb",
+        "score": 0.9010793414479166,
+        "count": 2
+      },
+      {
+        "stem": "yeni",
+        "score": 0.8631929934397877,
+        "count": 2
+      },
+      {
+        "stem": "öyr",
+        "score": 0.7729031053498377,
+        "count": 1
+      },
+      {
+        "stem": "şagird",
+        "score": 0.5797593893452612,
+        "count": 1
+      },
+      {
+        "stem": "kompüter",
+        "score": 0.5766777154286832,
+        "count": 1
+      }
+    ],
+    "want_textrank": [
+      {
+        "stem": "yeni",
+        "score": 0.13835023849647116,
+        "count": 2
+      },
+      {
+        "stem": "məktəb",
+        "score": 0.10020502999651283,
+        "count": 2
+      },
+      {
+        "stem": "müəllim",
+        "score": 0.0721690700471894,
+        "count": 1
+      },
+      {
+        "stem": "kompüter",
+        "score": 0.07101347573220268,
+        "count": 1
+      },
+      {
+        "stem": "dərs",
+        "score": 0.0708186647642653,
+        "count": 1
+      }
+    ],
+    "want_keywords": [
+      "yeni",
+      "məktəb",
+      "müəllim",
+      "kompüter",
+      "dərs",
+      "şagird",
+      "istifadə",
+      "texnologiya",
+      "müasir",
+      "açıl"
+    ]
+  }
+]
