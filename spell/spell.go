@@ -90,6 +90,14 @@ func IsCorrect(word string) bool {
 		}
 	}
 
+	// Words containing digits are not natural language misspellings
+	// (identifiers, codes, mixed content); treat as correct.
+	for _, r := range lower {
+		if unicode.IsDigit(r) {
+			return true
+		}
+	}
+
 	// Direct frequency dictionary hit.
 	if _, ok := words[lower]; ok {
 		return true

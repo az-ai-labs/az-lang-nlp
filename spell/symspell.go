@@ -12,10 +12,11 @@ import (
 
 const (
 	maxEditDistance = 2       // maximum pre-computed edit distance
-	prefixLength   = 7       // prefix length for delete generation (memory optimization)
-	maxWordBytes   = 256     // maximum word length in bytes
-	maxInputBytes  = 1 << 20 // 1 MiB limit for Correct
-	minWordRunes   = 2       // minimum runes for a word to be spell-checked
+	prefixLength    = 7       // prefix length for delete generation (memory optimization)
+	maxWordBytes    = 256     // maximum word length in bytes
+	maxInputBytes   = 1 << 20 // 1 MiB limit for Correct
+	minWordRunes    = 2       // minimum runes for a word to be spell-checked
+	deletesPerWord  = 4       // estimated delete variants per word for initial map capacity
 )
 
 //go:embed freq.txt
@@ -33,7 +34,7 @@ func init() {
 	lines := bytes.Split(freqRaw, []byte("\n"))
 	words = make(map[string]int64, len(lines))
 	wordList = make([]string, 0, len(lines))
-	deletes = make(map[uint32][]uint32, len(lines)*4)
+	deletes = make(map[uint32][]uint32, len(lines)*deletesPerWord)
 
 	for _, line := range lines {
 		if len(line) == 0 {
@@ -52,7 +53,7 @@ func init() {
 		}
 
 		words[word] = freq
-		idx := uint32(len(wordList))
+		idx := uint32(len(wordList)) //nolint:gosec // dictionary size is bounded well below uint32 max
 		wordList = append(wordList, word)
 
 		n := utf8.RuneCountInString(word)
@@ -85,7 +86,7 @@ func truncateToRunes(s string, n int) string {
 // fnvHash returns the FNV-1a 32-bit hash of s.
 func fnvHash(s string) uint32 {
 	h := fnv.New32a()
-	h.Write([]byte(s)) // cannot fail per hash.Hash contract
+	_, _ = h.Write([]byte(s)) // cannot fail per hash.Hash contract
 	return h.Sum32()
 }
 
@@ -271,23 +272,23 @@ func damerauLevenshtein(a, b string) int {
 			ins := curr[j-1] + 1
 			sub := prev[j-1] + cost
 
-			min := del
-			if ins < min {
-				min = ins
+			best := del
+			if ins < best {
+				best = ins
 			}
-			if sub < min {
-				min = sub
+			if sub < best {
+				best = sub
 			}
 
 			// Transposition of two adjacent characters.
 			if i > 1 && j > 1 && ra[i-1] == rb[j-2] && ra[i-2] == rb[j-1] {
 				trans := prev2[j-2] + cost
-				if trans < min {
-					min = trans
+				if trans < best {
+					best = trans
 				}
 			}
 
-			curr[j] = min
+			curr[j] = best
 		}
 
 		prev2, prev, curr = prev, curr, prev2

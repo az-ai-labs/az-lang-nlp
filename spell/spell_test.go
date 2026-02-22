@@ -434,10 +434,10 @@ func ExampleCorrect() {
 // TestMaxWordBytesEnforcement verifies the 256-byte limit is enforced correctly.
 func TestMaxWordBytesEnforcement(t *testing.T) {
 	tests := []struct {
-		name      string
-		input     string
-		byteLen   int
-		wantTrue  bool // IsCorrect must return true (too long = not a spell error)
+		name     string
+		input    string
+		byteLen  int
+		wantTrue bool // IsCorrect must return true (too long = not a spell error)
 	}{
 		{
 			name:     "exactly 256 bytes - gets processed",
