@@ -18,6 +18,7 @@ All packages are safe for concurrent use.
 | [morph](#morphological-analysis) | Stem and suffix chain decomposition                     |
 | [numtext](#number-to-text)       | Number / text conversion ("123" &rarr; "yuz iyirmi uc") |
 | [ner](#named-entity-recognition) | FIN, VOEN, phone, email, IBAN, plate, URL extraction    |
+| [datetime](#datetime)            | Date/time parser ("5 mart 2026" &rarr; structured)      |
 | [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
 
 ## Install
@@ -146,6 +147,26 @@ ner.IBANs("AZ21NABZ00000000137010001944")
 
 FIN and VOEN patterns are ambiguous in isolation. When preceded by a keyword (e.g. "FIN:", "VOEN:"), `Entity.Labeled` is true, indicating higher confidence. Overlapping entities are resolved by preferring longer matches.
 
+## Datetime
+
+Parse Azerbaijani date and time expressions into structured values.
+
+```go
+// Parse a natural-language date
+r, _ := datetime.Parse("5 mart 2026", time.Time{})
+fmt.Println(r.Type, r.Time.Format("2006-01-02"))
+// Date 2026-03-05
+
+// Extract dates from running text
+for _, r := range datetime.Extract("Görüş 15 yanvar 2026 saat 14:30-da olacaq", time.Time{}) {
+    fmt.Printf("%s: %q -> %s\n", r.Type, r.Text, r.Time.Format("2006-01-02 15:04"))
+}
+// Date: "15 yanvar 2026" -> 2026-01-15 00:00
+// Time: "14:30" -> ... 14:30
+```
+
+Handles natural text ("5 mart 2026"), numeric formats ("05.03.2026", "2026-03-05"), and relative expressions ("bu gun", "3 gun evvel", "kecen hefte"). Relative expressions resolve against a reference time.
+
 ## Language Detection
 
 Identify the language of input text: Azerbaijani, Russian, English, or Turkish.
@@ -175,7 +196,6 @@ Uses hybrid character-set scoring with trigram fallback for ambiguous cases (Aze
 ## Planned
 
 - **spell** — spell checker (SymSpell algorithm)
-- **datetime** — date/time parser ("5 mart 2026" &rarr; structured)
 - **normalize** — text normalization, diacritic restoration
 - **keywords** — keyword extraction (TF-IDF / TextRank)
 - **validate** — text validator (spelling + punctuation + layout)
