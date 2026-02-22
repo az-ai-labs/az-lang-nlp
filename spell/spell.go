@@ -74,8 +74,13 @@ func IsCorrect(word string) bool {
 	}
 
 	// Hyphenated words: each non-empty part must be correct independently.
+	// Cap the number of parts to prevent CPU amplification on pathological input.
 	if idx := strings.IndexByte(lower, '-'); idx > 0 && idx < len(lower)-1 {
-		for _, part := range strings.Split(word, "-") {
+		parts := strings.Split(word, "-")
+		if len(parts) > maxHyphenParts {
+			return true
+		}
+		for _, part := range parts {
 			if part != "" && !IsCorrect(part) {
 				return false
 			}

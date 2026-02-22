@@ -17,6 +17,7 @@ const (
 	maxInputBytes   = 1 << 20 // 1 MiB limit for Correct
 	minWordRunes    = 2       // minimum runes for a word to be spell-checked
 	deletesPerWord  = 4       // estimated delete variants per word for initial map capacity
+	maxHyphenParts  = 8       // maximum hyphen-separated parts to check independently
 )
 
 //go:embed freq.txt
