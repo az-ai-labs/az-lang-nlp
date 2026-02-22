@@ -32,6 +32,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 const (
@@ -331,7 +333,7 @@ func findDeepVerbStem(results []Analysis) string {
 	var best string
 	bestLen := maxWordBytes
 	for _, a := range results {
-		if len(a.Morphemes) == 0 || !isKnownStem(toLower(a.Stem)) {
+		if len(a.Morphemes) == 0 || !isKnownStem(azcase.ToLower(a.Stem)) {
 			continue
 		}
 		tag := a.Morphemes[0].Tag
@@ -353,12 +355,12 @@ func findDeepVerbStem(results []Analysis) string {
 // Preserves original casing of the first character.
 func findVowelDropStem(results []Analysis) string {
 	for _, a := range results {
-		if len(a.Morphemes) > 0 && !isKnownStem(toLower(a.Stem)) {
-			if restored := tryRestoreVowelDrop(toLower(a.Stem)); restored != "" {
+		if len(a.Morphemes) > 0 && !isKnownStem(azcase.ToLower(a.Stem)) {
+			if restored := tryRestoreVowelDrop(azcase.ToLower(a.Stem)); restored != "" {
 				rOrig := []rune(a.Stem)
 				rRest := []rune(restored)
-				if len(rOrig) > 0 && len(rRest) > 0 && rOrig[0] != azLower(rOrig[0]) {
-					rRest[0] = azUpper(rRest[0])
+				if len(rOrig) > 0 && len(rRest) > 0 && rOrig[0] != azcase.Lower(rOrig[0]) {
+					rRest[0] = azcase.Upper(rRest[0])
 					return string(rRest)
 				}
 				return restored
@@ -374,12 +376,12 @@ func findVowelDropStem(results []Analysis) string {
 // gözlük→göz (DerivAbstract) even when the whole word is in the dictionary.
 // Returns the shorter stem, or "" if no productive decomposition exists.
 func findProductiveStem(results []Analysis, word string) string {
-	wordLower := toLower(word)
+	wordLower := azcase.ToLower(word)
 	for _, a := range results {
 		if len(a.Morphemes) == 0 {
 			continue
 		}
-		stemLower := toLower(a.Stem)
+		stemLower := azcase.ToLower(a.Stem)
 		if stemLower == wordLower || !isKnownStem(stemLower) {
 			continue
 		}
@@ -423,7 +425,7 @@ func Stem(word string) string {
 	results := Analyze(word)
 
 	// Four-pass dictionary-aware stem selection.
-	wordKnown := isKnownStem(toLower(word))
+	wordKnown := isKnownStem(azcase.ToLower(word))
 	// Pass 1: prefer analysis with morphemes AND known dictionary stem,
 	// but skip when the whole word is also known (avoids stripping real
 	// stems like ana->an where both are dictionary entries).
@@ -436,7 +438,7 @@ func Stem(word string) string {
 			return deep
 		}
 		for _, a := range results {
-			if len(a.Morphemes) > 0 && isKnownStem(toLower(a.Stem)) {
+			if len(a.Morphemes) > 0 && isKnownStem(azcase.ToLower(a.Stem)) {
 				return a.Stem
 			}
 		}
@@ -479,7 +481,7 @@ func Analyze(word string) []Analysis {
 
 	results := analyze(word)
 	// Always include bare-stem interpretation.
-	if isValidStem(toLower(word)) {
+	if isValidStem(azcase.ToLower(word)) {
 		results = append(results, Analysis{Stem: word})
 	}
 	if len(results) == 0 {

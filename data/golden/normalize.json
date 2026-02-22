@@ -1,0 +1,142 @@
+[
+  {
+    "name": "restore_gozel",
+    "input": "gozel",
+    "want_word": "gözəl",
+    "want_text": "gözəl",
+    "word_only": false
+  },
+  {
+    "name": "restore_soz",
+    "input": "soz",
+    "want_word": "söz",
+    "want_text": "söz",
+    "word_only": false
+  },
+  {
+    "name": "restore_azerbaycan",
+    "input": "azerbaycan",
+    "want_word": "azərbaycan",
+    "want_text": "azərbaycan",
+    "word_only": false
+  },
+  {
+    "name": "restore_dovlet",
+    "input": "dovlet",
+    "want_word": "dövlət",
+    "want_text": "dövlət",
+    "word_only": false
+  },
+  {
+    "name": "restore_corek",
+    "input": "corek",
+    "want_word": "çörək",
+    "want_text": "çörək",
+    "word_only": false
+  },
+  {
+    "name": "restore_muellim",
+    "input": "muellim",
+    "want_word": "müəllim",
+    "want_text": "müəllim",
+    "word_only": false
+  },
+  {
+    "name": "restore_sagird",
+    "input": "sagird",
+    "want_word": "şagird",
+    "want_text": "şagird",
+    "word_only": false
+  },
+  {
+    "name": "unchanged_kitab",
+    "input": "kitab",
+    "want_word": "kitab",
+    "want_text": "kitab",
+    "word_only": false
+  },
+  {
+    "name": "unchanged_ev",
+    "input": "ev",
+    "want_word": "ev",
+    "want_text": "ev",
+    "word_only": false
+  },
+  {
+    "name": "unchanged_server",
+    "input": "server",
+    "want_word": "server",
+    "want_text": "server",
+    "word_only": false
+  },
+  {
+    "name": "unchanged_test",
+    "input": "test",
+    "want_word": "test",
+    "want_text": "test",
+    "word_only": false
+  },
+  {
+    "name": "ambiguous_seher",
+    "input": "seher",
+    "want_word": "seher",
+    "want_text": "seher",
+    "word_only": false
+  },
+  {
+    "name": "case_title_gozel",
+    "input": "Gozel",
+    "want_word": "Gözəl",
+    "want_text": "Gözəl",
+    "word_only": false
+  },
+  {
+    "name": "case_upper_gozel",
+    "input": "GOZEL",
+    "want_word": "GÖZƏL",
+    "want_text": "GÖZƏL",
+    "word_only": false
+  },
+  {
+    "name": "full_text_sentence",
+    "input": "Bu gozel seherde yasayiram",
+    "want_word": "Bu gozel seherde yasayiram",
+    "want_text": "Bu gözəl seherde yasayiram",
+    "word_only": false
+  },
+  {
+    "name": "apostrophe_soz_un",
+    "input": "soz'un",
+    "want_word": "söz'un",
+    "want_text": "söz'un",
+    "word_only": false
+  },
+  {
+    "name": "hyphenated_gozel_kitab",
+    "input": "gozel-kitab",
+    "want_word": "gözəl-kitab",
+    "want_text": "gözəl-kitab",
+    "word_only": false
+  },
+  {
+    "name": "idempotent_already_correct",
+    "input": "gözəl söz",
+    "want_word": "gözəl söz",
+    "want_text": "gözəl söz",
+    "word_only": false
+  },
+  {
+    "name": "mixed_known_unknown",
+    "input": "gozel server",
+    "want_word": "gozel server",
+    "want_text": "gözəl server",
+    "word_only": false
+  },
+  {
+    "name": "preserve_punctuation",
+    "input": "gozel, soz!",
+    "want_word": "gozel, soz!",
+    "want_text": "gözəl, söz!",
+    "word_only": false
+  }
+]

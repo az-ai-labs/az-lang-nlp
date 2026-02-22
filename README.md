@@ -19,6 +19,7 @@ All packages are safe for concurrent use.
 | [numtext](#number-to-text)       | Number / text conversion ("123" &rarr; "yuz iyirmi uc") |
 | [ner](#named-entity-recognition) | FIN, VOEN, phone, email, IBAN, plate, URL extraction    |
 | [datetime](#datetime)            | Date/time parser ("5 mart 2026" &rarr; structured)      |
+| [normalize](#text-normalization) | Diacritic restoration ("gozel" &rarr; "g&ouml;z&auml;l")            |
 | [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
 
 ## Install
@@ -167,6 +168,33 @@ for _, r := range datetime.Extract("Görüş 15 yanvar 2026 saat 14:30-da olacaq
 
 Handles natural text ("5 mart 2026"), numeric formats ("05.03.2026", "2026-03-05"), and relative expressions ("bu gun", "3 gun evvel", "kecen hefte"). Relative expressions resolve against a reference time.
 
+## Text Normalization
+
+Restore missing Azerbaijani diacritics in ASCII-degraded text.
+
+```go
+// Restore diacritics in a single word
+normalize.NormalizeWord("gozel")
+// gözəl
+
+normalize.NormalizeWord("azerbaycan")
+// azərbaycan
+
+// Ambiguous words are left unchanged
+normalize.NormalizeWord("seher")
+// seher (could be səhər or şəhər)
+
+// Full text normalization
+normalize.Normalize("Bu gozel seherde yasayiram.")
+// Bu gözəl seherde yasayiram.
+
+// Case is preserved
+normalize.NormalizeWord("GOZEL")
+// GÖZƏL
+```
+
+Uses dictionary lookup against the morph package's ~12K stem dictionary to find unambiguous diacritic restorations. Words with multiple possible restorations or not found in the dictionary are returned unchanged. Handles hyphenated words and apostrophe suffixes. Input longer than 1 MiB is returned unchanged.
+
 ## Language Detection
 
 Identify the language of input text: Azerbaijani, Russian, English, or Turkish.
@@ -196,7 +224,6 @@ Uses hybrid character-set scoring with trigram fallback for ambiguous cases (Aze
 ## Planned
 
 - **spell** — spell checker (SymSpell algorithm)
-- **normalize** — text normalization, diacritic restoration
 - **keywords** — keyword extraction (TF-IDF / TextRank)
 - **validate** — text validator (spelling + punctuation + layout)
 

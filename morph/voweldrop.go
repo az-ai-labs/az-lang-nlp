@@ -8,6 +8,8 @@
 // returned to the caller.
 package morph
 
+import "github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+
 // minRestoreLen is the minimum number of runes in a stem for vowel drop
 // restoration to be attempted. A contracted stem must have at least a vowel
 // prefix and a two-consonant cluster.
@@ -62,7 +64,7 @@ func tryRestoreVowelDrop(stem string) string {
 	default:
 		// Multiple dictionary hits — use four-way vowel harmony to pick
 		// the correct one (e.g. aln → alın not alan).
-		target := fourWayTarget(azLower(stemVowel))
+		target := fourWayTarget(azcase.Lower(stemVowel))
 		for _, m := range matches {
 			if []rune(m)[insertPos] == target {
 				return m

@@ -7,6 +7,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 // ---------------------------------------------------------------------------
@@ -220,64 +222,6 @@ func TestIsValidStem(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := isValidStem(tt.s); got != tt.want {
 				t.Errorf("isValidStem(%q) = %v, want %v", tt.s, got, tt.want)
-			}
-		})
-	}
-}
-
-// ---------------------------------------------------------------------------
-// Azerbaijani-specific casing
-// ---------------------------------------------------------------------------
-
-func TestAzLower(t *testing.T) {
-	tests := []struct {
-		name string
-		r    rune
-		want rune
-	}{
-		{"I to ı", 'I', 'ı'},
-		{"İ to i", 'İ', 'i'},
-		{"A to a", 'A', 'a'},
-		{"Ə to ə", 'Ə', 'ə'},
-		{"Ş to ş", 'Ş', 'ş'},
-		{"already lowercase a", 'a', 'a'},
-		{"already lowercase ı", 'ı', 'ı'},
-		{"digit unchanged", '1', '1'},
-		{"space unchanged", ' ', ' '},
-		{"Ç to ç", 'Ç', 'ç'},
-		{"Ğ to ğ", 'Ğ', 'ğ'},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := azLower(tt.r); got != tt.want {
-				t.Errorf("azLower(%q) = %q, want %q", tt.r, got, tt.want)
-			}
-		})
-	}
-}
-
-func TestToLower(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  string
-	}{
-		{"Bakı", "Bakı", "bakı"},
-		{"KITAB", "KITAB", "kıtab"},
-		{"İstanbul", "İstanbul", "istanbul"},
-		{"Əli", "Əli", "əli"},
-		{"hello", "hello", "hello"},
-		{"empty", "", ""},
-		{"123", "123", "123"},
-		{"MixedCaseƏŞÇ", "MixedCaseƏŞÇ", "mixedcaseəşç"},
-		{"DAĞLAR", "DAĞLAR", "dağlar"},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := toLower(tt.input); got != tt.want {
-				t.Errorf("toLower(%q) = %q, want %q", tt.input, got, tt.want)
 			}
 		})
 	}
@@ -565,7 +509,7 @@ func TestSuffixTableCompleteness(t *testing.T) {
 	// Check all surfaces are lowercase
 	for i, rule := range suffixRules {
 		for j, surf := range rule.surfaces {
-			if toLower(surf) != surf {
+			if azcase.ToLower(surf) != surf {
 				t.Errorf("rule %d surface %d %q is not lowercase", i, j, surf)
 			}
 		}
@@ -815,7 +759,7 @@ func TestStems(t *testing.T) {
 // (subsequence match).
 func hasAnalysis(results []Analysis, stem string, tags []MorphTag) bool {
 	for _, a := range results {
-		if toLower(a.Stem) != toLower(stem) {
+		if azcase.ToLower(a.Stem) != azcase.ToLower(stem) {
 			continue
 		}
 		if containsTags(a.Morphemes, tags) {
@@ -929,7 +873,7 @@ func TestConsonantAssimilation(t *testing.T) {
 	// b is voiced, so locative uses -da form
 	t.Run("kitabda voiced b uses da", func(t *testing.T) {
 		got := Stem("kitabda")
-		if toLower(got) != "kitab" {
+		if azcase.ToLower(got) != "kitab" {
 			t.Errorf("Stem(\"kitabda\") = %q, want \"kitab\"", got)
 		}
 	})
@@ -937,7 +881,7 @@ func TestConsonantAssimilation(t *testing.T) {
 	// c is voiced in Azerbaijani, so locative uses -da form
 	t.Run("ağacda voiced c uses da", func(t *testing.T) {
 		got := Stem("ağacda")
-		if toLower(got) != "ağac" {
+		if azcase.ToLower(got) != "ağac" {
 			t.Errorf("Stem(\"ağacda\") = %q, want \"ağac\"", got)
 		}
 	})
@@ -947,7 +891,7 @@ func TestConsonantAssimilation(t *testing.T) {
 		results := Analyze("kitabta")
 		for _, a := range results {
 			for _, m := range a.Morphemes {
-				if m.Tag == CaseLoc && m.Surface == "ta" && toLower(a.Stem) == "kitab" {
+				if m.Tag == CaseLoc && m.Surface == "ta" && azcase.ToLower(a.Stem) == "kitab" {
 					t.Errorf("kitabta should not parse as kitab+ta (t after voiced b), got: %s", a)
 				}
 			}
@@ -999,7 +943,7 @@ func TestKQSoftening(t *testing.T) {
 			results := Analyze(tt.word)
 			found := false
 			for _, a := range results {
-				if toLower(a.Stem) == toLower(tt.restored) {
+				if azcase.ToLower(a.Stem) == azcase.ToLower(tt.restored) {
 					found = true
 					break
 				}
@@ -1110,7 +1054,7 @@ func TestUnderStemmingRegression(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.word, func(t *testing.T) {
 			got := Stem(tt.word)
-			if toLower(got) != toLower(tt.stem) {
+			if azcase.ToLower(got) != azcase.ToLower(tt.stem) {
 				t.Errorf("Stem(%q) = %q, want %q (under-stemming regression)",
 					tt.word, got, tt.stem)
 			}
@@ -1132,7 +1076,7 @@ func verifyInvariants(t *testing.T, word string, a Analysis) {
 
 	// Direct reconstruction: stem + suffixes.
 	direct := a.Stem + suffixes
-	if toLower(direct) == toLower(word) {
+	if azcase.ToLower(direct) == azcase.ToLower(word) {
 		return
 	}
 
@@ -1144,13 +1088,13 @@ func verifyInvariants(t *testing.T, word string, a Analysis) {
 		firstSuffRunes := []rune(a.Morphemes[0].Surface)
 		if len(firstSuffRunes) > 0 && isVowel(firstSuffRunes[0]) {
 			var softened string
-			switch azLower(stemRunes[len(stemRunes)-1]) {
+			switch azcase.Lower(stemRunes[len(stemRunes)-1]) {
 			case 'k':
 				softened = string(stemRunes[:len(stemRunes)-1]) + "y" + suffixes
 			case 'q':
 				softened = string(stemRunes[:len(stemRunes)-1]) + "ğ" + suffixes
 			}
-			if softened != "" && toLower(softened) == toLower(word) {
+			if softened != "" && azcase.ToLower(softened) == azcase.ToLower(word) {
 				return
 			}
 		}
@@ -1166,7 +1110,7 @@ func verifyInvariants(t *testing.T, word string, a Analysis) {
 				// Check if previous suffix ended in k or q
 				prevRunes := []rune(a.Morphemes[i-1].Surface)
 				if len(prevRunes) > 0 {
-					lastRune := azLower(prevRunes[len(prevRunes)-1])
+					lastRune := azcase.Lower(prevRunes[len(prevRunes)-1])
 					if lastRune == 'k' {
 						// Replace k with y
 						reconstructed = reconstructed[:len(reconstructed)-1] + "y"
@@ -1178,7 +1122,7 @@ func verifyInvariants(t *testing.T, word string, a Analysis) {
 			}
 			reconstructed += m.Surface
 		}
-		if toLower(reconstructed) == toLower(word) {
+		if azcase.ToLower(reconstructed) == azcase.ToLower(word) {
 			return
 		}
 	}

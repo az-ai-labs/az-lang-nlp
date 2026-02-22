@@ -1,9 +1,9 @@
 package morph
 
 import (
-	"strings"
-	"unicode"
 	"unicode/utf8"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 // backVowels contains Azerbaijani back vowels (both cases).
@@ -81,50 +81,6 @@ func isValidStem(s string) bool {
 	return runes >= 2 && hasVowel
 }
 
-// azLower returns the Azerbaijani-aware lowercase form of r.
-// Handles the dotted/dotless I distinction:
-//   - I (U+0049) -> ı (U+0131, dotless small i)
-//   - İ (U+0130, dotted capital I) -> i (U+0069)
-//
-// All other runes use unicode.ToLower.
-func azLower(r rune) rune {
-	switch r {
-	case 'I':
-		return '\u0131' // I -> ı
-	case '\u0130':
-		return 'i' // İ -> i
-	default:
-		return unicode.ToLower(r)
-	}
-}
-
-// azUpper returns the Azerbaijani-aware uppercase form of r.
-// Handles the dotted/dotless I distinction:
-//   - i (U+0069) -> İ (U+0130, dotted capital I)
-//   - ı (U+0131, dotless small i) -> I (U+0049)
-//
-// All other runes use unicode.ToUpper.
-func azUpper(r rune) rune {
-	switch r {
-	case 'i':
-		return '\u0130' // i -> İ
-	case '\u0131':
-		return 'I' // ı -> I
-	default:
-		return unicode.ToUpper(r)
-	}
-}
-
-// toLower returns s with Azerbaijani-aware lowercasing applied to every rune.
-func toLower(s string) string {
-	var b strings.Builder
-	b.Grow(len(s))
-	for _, r := range s {
-		b.WriteRune(azLower(r))
-	}
-	return b.String()
-}
-
 // matchesBackFront reports whether the suffix vowel agrees with the
 // stem's last vowel under back/front harmony.
 // A back last-vowel requires the suffix vowel to be back; front requires front.
@@ -132,8 +88,8 @@ func matchesBackFront(stemLastVowel, suffixVowel rune) bool {
 	if stemLastVowel == 0 {
 		return true // no vowel in stem, accept any
 	}
-	stemBack := isBackVowel(azLower(stemLastVowel))
-	suffBack := isBackVowel(azLower(suffixVowel))
+	stemBack := isBackVowel(azcase.Lower(stemLastVowel))
+	suffBack := isBackVowel(azcase.Lower(suffixVowel))
 	return stemBack == suffBack
 }
 
@@ -145,8 +101,8 @@ func matchesFourWay(stemLastVowel, suffixVowel rune) bool {
 	if stemLastVowel == 0 {
 		return true
 	}
-	expected := fourWayTarget(azLower(stemLastVowel))
-	return azLower(suffixVowel) == expected
+	expected := fourWayTarget(azcase.Lower(stemLastVowel))
+	return azcase.Lower(suffixVowel) == expected
 }
 
 // fourWayTarget returns the expected suffix vowel for four-way harmony

@@ -4,26 +4,13 @@ import (
 	"math"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 // isCyrillic reports whether r is a Cyrillic letter (Unicode block U+0400..U+04FF).
 func isCyrillic(r rune) bool {
 	return r >= 0x0400 && r <= 0x04FF
-}
-
-// toLowerTurkic returns the Turkic-aware lowercase of r.
-// In Azerbaijani and Turkish, I (U+0049) maps to ı (U+0131, dotless)
-// and İ (U+0130, dotted) maps to i (U+0069). All other runes use
-// standard Unicode lowercasing.
-func toLowerTurkic(r rune) rune {
-	switch r {
-	case 'İ': // U+0130 — dotted capital I → standard lowercase i
-		return 'i'
-	case 'I': // U+0049 — ASCII capital I → dotless ı in Turkic
-		return 'ı'
-	default:
-		return unicode.ToLower(r)
-	}
 }
 
 // --- Trigram profiles ---
@@ -172,7 +159,7 @@ func extractTrigrams(s string) map[string]float64 {
 	letters := make([]rune, 0, utf8.RuneCountInString(s))
 	for _, r := range s {
 		if unicode.IsLetter(r) {
-			letters = append(letters, toLowerTurkic(r))
+			letters = append(letters, azcase.Lower(r))
 		}
 	}
 

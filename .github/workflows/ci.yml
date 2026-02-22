@@ -76,3 +76,9 @@ jobs:
 
       - name: Fuzz datetime
         run: go test ./datetime/ -fuzz=FuzzExtract -fuzztime=10s -parallel=1
+
+      - name: Fuzz normalize
+        run: go test ./normalize/ -fuzz=FuzzNormalize$ -fuzztime=10s -parallel=1
+
+      - name: Fuzz normalize word
+        run: go test ./normalize/ -fuzz=FuzzNormalizeWord$ -fuzztime=10s -parallel=1

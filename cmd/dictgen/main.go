@@ -19,6 +19,8 @@ import (
 	"sort"
 	"strings"
 	"unicode"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 const (
@@ -69,7 +71,7 @@ func main() {
 			continue
 		}
 
-		lemma := toLower(entry.Word)
+		lemma := azcase.ToLower(entry.Word)
 
 		if !isAcceptable(lemma) {
 			continue
@@ -250,33 +252,6 @@ func isAzVowel(r rune) bool {
 		return true
 	}
 	return false
-}
-
-// azLower returns the Azerbaijani-aware lowercase form of r.
-// Handles the dotted/dotless I distinction:
-//   - I (U+0049) -> ı (U+0131, dotless small i)
-//   - İ (U+0130, dotted capital I) -> i (U+0069)
-//
-// All other runes use unicode.ToLower.
-func azLower(r rune) rune {
-	switch r {
-	case 'I':
-		return '\u0131' // I -> ı
-	case '\u0130':
-		return 'i' // İ -> i
-	default:
-		return unicode.ToLower(r)
-	}
-}
-
-// toLower returns s with Azerbaijani-aware lowercasing applied to every rune.
-func toLower(s string) string {
-	var b strings.Builder
-	b.Grow(len(s))
-	for _, r := range s {
-		b.WriteRune(azLower(r))
-	}
-	return b.String()
 }
 
 // filterInflected removes noun entries that are inflected forms of other nouns.

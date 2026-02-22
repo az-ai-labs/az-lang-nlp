@@ -9,6 +9,8 @@ import (
 	"time"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 // wordSpan represents a word in the source text with its byte offsets.
@@ -25,7 +27,7 @@ func extract(s string, ref time.Time) []Result {
 	all := make([]Result, 0, len(s)/100+minCap)
 
 	words := splitWords(s)
-	lower := azLower(s)
+	lower := azcase.ToLower(s)
 
 	all = appendNumeric(all, s, ref)
 	all = appendText(all, s, lower, words, ref)
@@ -777,7 +779,7 @@ func splitWords(s string) []wordSpan {
 		text := s[start:i]
 		words = append(words, wordSpan{
 			text:  text,
-			lower: azLower(text),
+			lower: azcase.ToLower(text),
 			start: start,
 			end:   i,
 		})
@@ -788,24 +790,6 @@ func splitWords(s string) []wordSpan {
 // isWordChar returns true if r is a letter or digit.
 func isWordChar(r rune) bool {
 	return unicode.IsLetter(r) || unicode.IsDigit(r)
-}
-
-// azLower lowercases a string with Azerbaijani-specific rules:
-// İ (U+0130) → i, I (U+0049) → ı (U+0131).
-func azLower(s string) string {
-	var b strings.Builder
-	b.Grow(len(s))
-	for _, r := range s {
-		switch r {
-		case '\u0130': // İ → i
-			b.WriteByte('i')
-		case 'I': // I → ı (Azerbaijani convention)
-			b.WriteRune('ı')
-		default:
-			b.WriteRune(unicode.ToLower(r))
-		}
-	}
-	return b.String()
 }
 
 // parseOrdinalWord extracts the numeric value from an ordinal or possessive word.

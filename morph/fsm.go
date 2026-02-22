@@ -1,6 +1,10 @@
 package morph
 
-import "sort"
+import (
+	"sort"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+)
 
 const maxDepth = 10
 
@@ -55,7 +59,7 @@ func init() {
 // analyze performs morphological analysis on word, returning all valid parses
 // sorted by morpheme count descending (deepest analysis first), deduplicated.
 func analyze(word string) []Analysis {
-	low := toLower(word)
+	low := azcase.ToLower(word)
 	origRunes := []rune(word)
 	lowerRunes := []rune(low)
 
@@ -82,8 +86,8 @@ func analyze(word string) []Analysis {
 	// prefer shorter stems (deeper stripping found the real root), then
 	// simpler analyses (fewer morphemes) for same-length stems.
 	sort.Slice(w.results, func(i, j int) bool {
-		ki := isKnownStem(toLower(w.results[i].Stem))
-		kj := isKnownStem(toLower(w.results[j].Stem))
+		ki := isKnownStem(azcase.ToLower(w.results[i].Stem))
+		kj := isKnownStem(azcase.ToLower(w.results[j].Stem))
 		if ki != kj {
 			return ki
 		}
