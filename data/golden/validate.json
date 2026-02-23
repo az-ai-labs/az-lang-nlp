@@ -1,0 +1,149 @@
+[
+  {
+    "name": "clean text",
+    "input": "Bu kitab çox gözəldir.",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "empty input",
+    "input": "",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "only numbers",
+    "input": "123 456 789",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "single character",
+    "input": "a",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "spelling error",
+    "input": "Bu ketab gözəldir.",
+    "want_score": 90,
+    "want_issues": [
+      {
+        "text": "ketab",
+        "start": 3,
+        "end": 8,
+        "type": "spelling",
+        "severity": "error",
+        "message": "unknown word",
+        "suggestion": "kitab"
+      }
+    ]
+  },
+  {
+    "name": "double space",
+    "input": "Bu  kitab gözəldir.",
+    "want_score": 97,
+    "want_issues": [
+      {
+        "text": "  ",
+        "start": 2,
+        "end": 4,
+        "type": "punctuation",
+        "severity": "warning",
+        "message": "multiple spaces",
+        "suggestion": " "
+      }
+    ]
+  },
+  {
+    "name": "space before comma",
+    "input": "Bu kitab , gözəldir.",
+    "want_score": 97,
+    "want_issues": [
+      {
+        "text": " ",
+        "start": 8,
+        "end": 9,
+        "type": "punctuation",
+        "severity": "warning",
+        "message": "space before punctuation",
+        "suggestion": ""
+      }
+    ]
+  },
+  {
+    "name": "ellipsis valid",
+    "input": "Bu kitab...",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "two dots flagged",
+    "input": "Bu kitab..",
+    "want_score": 99,
+    "want_issues": [
+      {
+        "text": "..",
+        "start": 8,
+        "end": 10,
+        "type": "punctuation",
+        "severity": "info",
+        "message": "repeated punctuation",
+        "suggestion": "."
+      }
+    ]
+  },
+  {
+    "name": "repeated exclamation",
+    "input": "Salam!!!",
+    "want_score": 99,
+    "want_issues": [
+      {
+        "text": "!!!",
+        "start": 5,
+        "end": 8,
+        "type": "punctuation",
+        "severity": "info",
+        "message": "repeated punctuation",
+        "suggestion": "!"
+      }
+    ]
+  },
+  {
+    "name": "title-case unknown word skipped",
+    "input": "Qərbi gözəldir.",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "digit-containing token skipped",
+    "input": "3-cü sinif",
+    "want_score": 100,
+    "want_issues": null
+  },
+  {
+    "name": "combined issues",
+    "input": "Bu ketab ,gözəldir.",
+    "want_score": 87,
+    "want_issues": [
+      {
+        "text": "ketab",
+        "start": 3,
+        "end": 8,
+        "type": "spelling",
+        "severity": "error",
+        "message": "unknown word",
+        "suggestion": "kitab"
+      },
+      {
+        "text": " ",
+        "start": 8,
+        "end": 9,
+        "type": "punctuation",
+        "severity": "warning",
+        "message": "space before punctuation",
+        "suggestion": ""
+      }
+    ]
+  }
+]

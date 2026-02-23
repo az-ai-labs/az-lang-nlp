@@ -154,7 +154,7 @@ func Suggest(word string, maxDist int) []Suggestion {
 	// Try whole-word lookup first.
 	if results := lookup(lower, maxDist); len(results) > 0 {
 		for i := range results {
-			results[i].Term = applyCase(word, results[i].Term)
+			results[i].Term = azcase.ApplyCase(word, results[i].Term)
 		}
 		return results
 	}
@@ -213,7 +213,7 @@ func Suggest(word string, maxDist int) []Suggestion {
 	sortSuggestions(results)
 
 	for i := range results {
-		results[i].Term = applyCase(word, results[i].Term)
+		results[i].Term = azcase.ApplyCase(word, results[i].Term)
 	}
 
 	return results
@@ -263,7 +263,7 @@ func Correct(text string) string {
 
 		// Leave title-case unknown words unchanged to avoid over-correcting
 		// proper nouns (names, places, organizations).
-		if isTitleCase(tok.Text) && !IsCorrect(tok.Text) {
+		if azcase.IsTitleCase(tok.Text) && !IsCorrect(tok.Text) {
 			sb.WriteString(tok.Text)
 			continue
 		}
@@ -271,82 +271,6 @@ func Correct(text string) string {
 		sb.WriteString(CorrectWord(tok.Text))
 	}
 
-	return sb.String()
-}
-
-// isTitleCase reports whether s has its first rune uppercase and is not
-// entirely uppercase (which would be an acronym or shouting).
-func isTitleCase(s string) bool {
-	r, size := utf8.DecodeRuneInString(s)
-	if r == utf8.RuneError || !unicode.IsUpper(r) {
-		return false
-	}
-	// Check that not all remaining runes are uppercase.
-	rest := s[size:]
-	if rest == "" {
-		return false // single character, not really title-case
-	}
-	for _, c := range rest {
-		if unicode.IsLetter(c) && !unicode.IsUpper(c) {
-			return true // found a lowercase letter after the initial uppercase
-		}
-	}
-	return false // all uppercase, not title-case
-}
-
-// applyCase transfers the case pattern of original onto corrected.
-// Three modes: all-upper, title-case (first rune upper), lowercase.
-func applyCase(original, corrected string) string {
-	if original == "" || corrected == "" {
-		return corrected
-	}
-
-	if isAllUpper(original) {
-		return toUpper(corrected)
-	}
-
-	firstRune, _ := utf8.DecodeRuneInString(original)
-	if unicode.IsUpper(firstRune) {
-		return upperFirst(corrected)
-	}
-
-	return corrected
-}
-
-// isAllUpper reports whether every letter in s is uppercase.
-func isAllUpper(s string) bool {
-	hasLetter := false
-	for _, r := range s {
-		if unicode.IsLetter(r) {
-			hasLetter = true
-			if !unicode.IsUpper(r) {
-				return false
-			}
-		}
-	}
-	return hasLetter
-}
-
-// toUpper returns s with Azerbaijani-aware uppercasing applied to every rune.
-func toUpper(s string) string {
-	var sb strings.Builder
-	sb.Grow(len(s))
-	for _, r := range s {
-		sb.WriteRune(azcase.Upper(r))
-	}
-	return sb.String()
-}
-
-// upperFirst returns s with its first rune Azerbaijani-uppercased.
-func upperFirst(s string) string {
-	r, size := utf8.DecodeRuneInString(s)
-	if r == utf8.RuneError || size == 0 {
-		return s
-	}
-	var sb strings.Builder
-	sb.Grow(len(s))
-	sb.WriteRune(azcase.Upper(r))
-	sb.WriteString(s[size:])
 	return sb.String()
 }
 
