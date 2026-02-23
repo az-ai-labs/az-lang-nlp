@@ -758,6 +758,138 @@ func TestExtractRelative(t *testing.T) {
 	}
 }
 
+// TestExtractDuration tests standalone duration expressions.
+func TestExtractDuration(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		in   string
+		want []Result
+	}{
+		{
+			name: "single unit hours",
+			in:   "2 saat",
+			want: []Result{{Text: "2 saat", Start: 0, End: 6, Type: TypeDuration, Duration: 2 * time.Hour}},
+		},
+		{
+			name: "single unit minutes",
+			in:   "45 dəqiqə",
+			want: []Result{{Text: "45 dəqiqə", Start: 0, End: 11, Type: TypeDuration, Duration: 45 * time.Minute}},
+		},
+		{
+			name: "single unit seconds",
+			in:   "3 saniyə",
+			want: []Result{{Text: "3 saniyə", Start: 0, End: 9, Type: TypeDuration, Duration: 3 * time.Second}},
+		},
+		{
+			name: "multi unit hours+minutes",
+			in:   "2 saat 30 dəqiqə",
+			want: []Result{{Text: "2 saat 30 dəqiqə", Start: 0, End: 18, Type: TypeDuration, Duration: 2*time.Hour + 30*time.Minute}},
+		},
+		{
+			name: "multi unit hours+minutes+seconds",
+			in:   "1 saat 15 dəqiqə 30 saniyə",
+			want: []Result{{Text: "1 saat 15 dəqiqə 30 saniyə", Start: 0, End: 29, Type: TypeDuration, Duration: 1*time.Hour + 15*time.Minute + 30*time.Second}},
+		},
+		{
+			name: "not duration when direction follows",
+			in:   "2 saat əvvəl",
+			want: nil, // handled by appendRelative, not duration; but extract returns relative result
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := Extract(tt.in, ref)
+			if tt.want == nil {
+				// Just verify it doesn't produce a Duration result.
+				for _, r := range got {
+					if r.Type == TypeDuration {
+						t.Errorf("unexpected Duration result: %v", r)
+					}
+				}
+				return
+			}
+			if len(got) != len(tt.want) {
+				t.Fatalf("got %d results, want %d\n  got: %v", len(got), len(tt.want), got)
+			}
+			for i := range tt.want {
+				if got[i].Text != tt.want[i].Text {
+					t.Errorf("[%d] Text: got %q, want %q", i, got[i].Text, tt.want[i].Text)
+				}
+				if got[i].Type != tt.want[i].Type {
+					t.Errorf("[%d] Type: got %v, want %v", i, got[i].Type, tt.want[i].Type)
+				}
+				if got[i].Duration != tt.want[i].Duration {
+					t.Errorf("[%d] Duration: got %v, want %v", i, got[i].Duration, tt.want[i].Duration)
+				}
+			}
+		})
+	}
+}
+
+// TestExtractNumtext tests numtext word-form number integration in relative and duration expressions.
+func TestExtractNumtext(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name     string
+		in       string
+		wantType Type
+		wantDur  time.Duration // for Duration type
+		wantText string
+	}{
+		{
+			name:     "numtext duration iki saat",
+			in:       "iki saat",
+			wantType: TypeDuration,
+			wantDur:  2 * time.Hour,
+			wantText: "iki saat",
+		},
+		{
+			name:     "numtext duration on beş dəqiqə",
+			in:       "on beş dəqiqə",
+			wantType: TypeDuration,
+			wantDur:  15 * time.Minute,
+			wantText: "on beş dəqiqə",
+		},
+		{
+			name:     "numtext relative iki gün əvvəl",
+			in:       "iki gün əvvəl",
+			wantType: TypeDate,
+			wantText: "iki gün əvvəl",
+		},
+		{
+			name:     "numtext relative üç həftə sonra",
+			in:       "üç həftə sonra",
+			wantType: TypeDate,
+			wantText: "üç həftə sonra",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got := Extract(tt.in, ref)
+			if len(got) == 0 {
+				t.Fatal("got no results")
+			}
+			r := got[0]
+			if r.Text != tt.wantText {
+				t.Errorf("Text: got %q, want %q", r.Text, tt.wantText)
+			}
+			if r.Type != tt.wantType {
+				t.Errorf("Type: got %v, want %v", r.Type, tt.wantType)
+			}
+			if tt.wantType == TypeDuration && r.Duration != tt.wantDur {
+				t.Errorf("Duration: got %v, want %v", r.Duration, tt.wantDur)
+			}
+		})
+	}
+}
+
 // TestExtractSaatTime tests "saat N" time-of-day patterns with optional AM/PM modifiers.
 func TestExtractSaatTime(t *testing.T) {
 	t.Parallel()
@@ -1226,7 +1358,7 @@ func TestResultString(t *testing.T) {
 func TestTypeMapsComplete(t *testing.T) {
 	t.Parallel()
 
-	for i := Type(0); i <= TypeDateTime; i++ {
+	for i := Type(0); i <= TypeDuration; i++ {
 		name := i.String()
 		if strings.HasPrefix(name, "Type(") {
 			t.Errorf("Type %d has no name in typeNames", i)
@@ -1372,4 +1504,66 @@ func BenchmarkParse(b *testing.B) {
 	for b.Loop() {
 		Parse("5 mart 2026", r) //nolint:errcheck
 	}
+}
+
+// TestTimezoneRespected verifies that Extract/Parse honour ref.Location()
+// instead of coercing to UTC.
+func TestTimezoneRespected(t *testing.T) {
+	t.Parallel()
+	baku, err := time.LoadLocation("Asia/Baku")
+	if err != nil {
+		t.Skip("Asia/Baku timezone not available")
+	}
+
+	refUTC := time.Date(2026, 2, 20, 10, 30, 0, 0, time.UTC)
+	refBaku := time.Date(2026, 2, 20, 14, 30, 0, 0, baku) // same instant, +4
+
+	t.Run("natural date uses ref location", func(t *testing.T) {
+		t.Parallel()
+		got := Extract("5 mart 2026", refBaku)
+		if len(got) != 1 {
+			t.Fatalf("got %d results, want 1", len(got))
+		}
+		if got[0].Time.Location() != baku {
+			t.Errorf("location = %v, want Asia/Baku", got[0].Time.Location())
+		}
+		// Same calendar date, different timezone.
+		want := time.Date(2026, 3, 5, 0, 0, 0, 0, baku)
+		if !got[0].Time.Equal(want) {
+			t.Errorf("time = %v, want %v", got[0].Time, want)
+		}
+	})
+
+	t.Run("relative date uses ref location", func(t *testing.T) {
+		t.Parallel()
+		got := Extract("sabah", refBaku)
+		if len(got) != 1 {
+			t.Fatalf("got %d results, want 1", len(got))
+		}
+		if got[0].Time.Location() != baku {
+			t.Errorf("location = %v, want Asia/Baku", got[0].Time.Location())
+		}
+	})
+
+	t.Run("UTC ref produces UTC results", func(t *testing.T) {
+		t.Parallel()
+		got := Extract("5 mart 2026", refUTC)
+		if len(got) != 1 {
+			t.Fatalf("got %d results, want 1", len(got))
+		}
+		if got[0].Time.Location() != time.UTC {
+			t.Errorf("location = %v, want UTC", got[0].Time.Location())
+		}
+	})
+
+	t.Run("zero ref defaults to UTC", func(t *testing.T) {
+		t.Parallel()
+		got := Extract("5 mart 2026", time.Time{})
+		if len(got) != 1 {
+			t.Fatalf("got %d results, want 1", len(got))
+		}
+		if got[0].Time.Location() != time.UTC {
+			t.Errorf("location = %v, want UTC", got[0].Time.Location())
+		}
+	})
 }

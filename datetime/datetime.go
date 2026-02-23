@@ -12,8 +12,8 @@
 //   - Parse returns a single Result for isolated date/time expressions.
 //
 // Relative and partial expressions are resolved against a reference time.
-// When ref is the zero value, time.Now() is used. All returned times use
-// time.UTC.
+// When ref is the zero value, time.Now().UTC() is used. All returned times
+// use the location from the reference time (UTC by default).
 //
 // All functions are safe for concurrent use by multiple goroutines.
 package datetime
@@ -31,6 +31,7 @@ const (
 	TypeDate     Type = iota // Only date components (year, month, day)
 	TypeTime                 // Only time components (hour, minute, second)
 	TypeDateTime             // Both date and time components
+	TypeDuration             // A time duration (e.g. "2 saat 30 dəqiqə")
 )
 
 // typeNames maps Type values to their string names.
@@ -38,6 +39,7 @@ var typeNames = [...]string{
 	TypeDate:     "Date",
 	TypeTime:     "Time",
 	TypeDateTime: "DateTime",
+	TypeDuration: "Duration",
 }
 
 // typeFromName maps string names back to Type values.
@@ -45,6 +47,7 @@ var typeFromName = map[string]Type{
 	"Date":     TypeDate,
 	"Time":     TypeTime,
 	"DateTime": TypeDateTime,
+	"Duration": TypeDuration,
 }
 
 // String returns the name of the type.
@@ -120,12 +123,13 @@ func (c Components) String() string {
 
 // Result represents a parsed date/time expression with its position in the source text.
 type Result struct {
-	Text     string     `json:"text"`     // The matched substring
-	Start    int        `json:"start"`    // Byte offset in the original string (inclusive)
-	End      int        `json:"end"`      // Byte offset in the original string (exclusive)
-	Type     Type       `json:"type"`     // Classification of the expression
-	Time     time.Time  `json:"time"`     // Resolved point in time (UTC)
-	Explicit Components `json:"explicit"` // Which components came from input vs. ref
+	Text     string        `json:"text"`               // The matched substring
+	Start    int           `json:"start"`              // Byte offset in the original string (inclusive)
+	End      int           `json:"end"`                // Byte offset in the original string (exclusive)
+	Type     Type          `json:"type"`               // Classification of the expression
+	Time     time.Time     `json:"time"`               // Resolved point in time
+	Duration time.Duration `json:"duration,omitempty"` // Populated when Type == TypeDuration
+	Explicit Components    `json:"explicit"`           // Which components came from input vs. ref
 }
 
 // String returns a debug representation, e.g. Date("5 mart 2026")[3:15].
@@ -142,8 +146,6 @@ func Extract(s string, ref time.Time) []Result {
 	}
 	if ref.IsZero() {
 		ref = time.Now().UTC()
-	} else {
-		ref = ref.UTC()
 	}
 	return extract(s, ref)
 }
@@ -160,8 +162,6 @@ func Parse(s string, ref time.Time) (Result, error) {
 	}
 	if ref.IsZero() {
 		ref = time.Now().UTC()
-	} else {
-		ref = ref.UTC()
 	}
 	results := extract(s, ref)
 	if len(results) == 0 {

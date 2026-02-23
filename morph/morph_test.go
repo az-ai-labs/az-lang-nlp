@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
@@ -652,6 +653,23 @@ func TestStem(t *testing.T) {
 		{"voweldrop şəhri", "şəhri", "şəhər"},
 		{"voweldrop boynu", "boynu", "boy"},     // boy (height) is known, blocks boyun
 		{"voweldrop case Oğlum", "Oğlum", "Oğlu"},
+		// Vowel drop stems (backlog #2)
+		{"şəklini", "şəklini", "şəkil"},
+		// əsl is itself a known adjective stem ("real/genuine"), so əsli
+		// stems to əsl via Pass 1 (known stem), not vowel-drop restoration.
+		// This matches the same behaviour as alnı→al and boynu→boy.
+		{"əsli", "əsli", "əsl"},
+
+		// -- Reciprocal-root verbs (backlog #1) --
+		// These are whole-word dictionary stems where the -ış/-iş suffix is
+		// part of the root, NOT a productive voice suffix.
+		{"reciprocal danış", "danış", "danış"},
+		{"reciprocal barış", "barış", "barış"},
+		{"reciprocal yarış", "yarış", "yarış"},
+		// Inflected forms of reciprocal-root verbs should still stem correctly.
+		{"reciprocal danışır", "danışır", "danış"},
+		{"reciprocal barışdı", "barışdı", "barış"},
+		{"reciprocal yarışır", "yarışır", "yarış"},
 	}
 
 	for _, tt := range tests {
@@ -1297,13 +1315,17 @@ func FuzzAnalyze(f *testing.F) {
 		if len(results) == 0 {
 			t.Errorf("Analyze(%q) returned empty", word)
 		}
-		// Every analysis stem must be non-empty
+		// Every analysis stem must be non-empty.
+		// Reconstruction invariant only holds for valid UTF-8: invalid bytes
+		// are replaced with U+FFFD during rune iteration, making round-trip impossible.
+		validUTF8 := utf8.ValidString(word)
 		for _, a := range results {
 			if a.Stem == "" {
 				t.Errorf("Analyze(%q) produced empty stem", word)
 			}
-			// Verify reconstruction invariant
-			verifyInvariants(t, word, a)
+			if validUTF8 {
+				verifyInvariants(t, word, a)
+			}
 		}
 	})
 }

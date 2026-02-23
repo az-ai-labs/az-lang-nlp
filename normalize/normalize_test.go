@@ -78,6 +78,8 @@ func TestNormalizeWord(t *testing.T) {
 		// -- Hyphenated words --
 
 		{"hyphenated restore", "gozel-kitab", "gözəl-kitab"},
+		{"hyphenated 2 parts works", "gozel-soz", "gözəl-söz"},
+		{"hyphenated 9 parts unchanged", "a-b-c-d-e-f-g-h-i", "a-b-c-d-e-f-g-h-i"},
 
 		// -- Edge cases --
 

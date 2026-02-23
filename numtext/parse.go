@@ -4,6 +4,8 @@ package numtext
 import (
 	"fmt"
 	"strings"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 // wordValues maps each Azerbaijani cardinal word to its numeric value.
@@ -38,18 +40,10 @@ var wordValues = map[string]int64{
 }
 
 // parse converts Azerbaijani cardinal number text to int64.
-//
-// Limitation: strings.ToLower does not correctly fold Azerbaijani-specific
-// uppercase letters. Specifically, İ (U+0130, capital I with dot above)
-// lowercases to "i̇" (i + U+0307 combining dot) rather than plain "i".
-// Likewise, I (U+0049) lowercases to "i" in Go, but Azerbaijani convention
-// maps it to "ı". Since all entries in wordValues are already lowercase
-// Azerbaijani, callers are expected to supply lowercase input; mixed-case
-// input may silently fail to match on those specific letters.
 func parse(s string) (int64, error) {
 	// Normalize whitespace and case.
 	s = strings.TrimSpace(s)
-	s = strings.ToLower(s)
+	s = azcase.ToLower(s)
 	tokens := strings.Fields(s) // splits on any run of whitespace
 
 	if len(tokens) == 0 {

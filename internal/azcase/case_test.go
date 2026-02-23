@@ -76,3 +76,24 @@ func TestToLower(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkToLower_AlreadyLower(b *testing.B) {
+	s := "kitablarımızdan"
+	for b.Loop() {
+		ToLower(s)
+	}
+}
+
+func BenchmarkToLower_MixedCase(b *testing.B) {
+	s := "Kitablarımızdan"
+	for b.Loop() {
+		ToLower(s)
+	}
+}
+
+func BenchmarkToLower_AllUpper(b *testing.B) {
+	s := "AZƏRBAYCAN"
+	for b.Loop() {
+		ToLower(s)
+	}
+}

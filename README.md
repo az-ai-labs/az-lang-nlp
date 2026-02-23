@@ -24,6 +24,7 @@ All packages are safe for concurrent use.
 | [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
 | [keywords](#keyword-extraction)  | Keyword extraction (TF-IDF / TextRank)                  |
 | [validate](#text-validation)     | Text quality validation (spelling, punctuation, layout) |
+| [sentiment](#sentiment-analysis) | Lexicon-based sentiment analysis                        |
 
 ## Install
 
@@ -169,7 +170,7 @@ for _, r := range datetime.Extract("Görüş 15 yanvar 2026 saat 14:30-da olacaq
 // Time: "14:30" -> ... 14:30
 ```
 
-Handles natural text ("5 mart 2026"), numeric formats ("05.03.2026", "2026-03-05"), and relative expressions ("bu gun", "3 gun evvel", "kecen hefte"). Relative expressions resolve against a reference time.
+Handles natural text ("5 mart 2026"), numeric formats ("05.03.2026", "2026-03-05"), relative expressions ("bu gun", "3 gun evvel", "kecen hefte"), and durations ("2 saat 30 d&auml;qiq&auml;"). Written-out numbers are supported via numtext integration ("iki saat"). Relative expressions resolve against a reference time, respecting its timezone.
 
 ## Text Normalization
 
@@ -305,6 +306,27 @@ validate.IsValid("Bu ketab gözəldir.") // false
 ```
 
 Returns a quality score (0-100) with weighted deductions: error -10, warning -3, info -1. Checks four categories: spelling errors via `spell.IsCorrect`, punctuation issues (spacing, repetition), keyboard layout errors (Cyrillic/Latin homoglyph detection), and mixed script usage. Title-case unknown words are skipped as likely proper nouns. Issues include byte offsets for editor integration. Input longer than 1 MiB returns score 100 with no issues.
+
+## Sentiment Analysis
+
+Analyze the sentiment of Azerbaijani text using a lexicon-based approach.
+
+```go
+// Full analysis with score and word counts
+r := sentiment.Analyze("Bu film gözəl və maraqlı idi")
+fmt.Println(r.Sentiment, r.Score)
+// Positive 0.8
+
+// Quick score check
+sentiment.Score("Pis hava")
+// -0.8
+
+// Boolean convenience
+sentiment.IsPositive("Həyat gözəldir")
+// true
+```
+
+Uses an embedded sentiment lexicon with ~200 Azerbaijani stems. Words are normalized and stemmed before lookup, so inflected forms ("gözəldir", "sevirdim") match their stem entries. Returns a score from -1.0 (most negative) to +1.0 (most positive). Unknown words are skipped. Input longer than 1 MiB returns a zero result.
 
 ## License
 

@@ -11,6 +11,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/numtext"
 )
 
 // wordSpan represents a word in the source text with its byte offsets.
@@ -32,6 +33,7 @@ func extract(s string, ref time.Time) []Result {
 	all = appendNumeric(all, s, ref)
 	all = appendText(all, s, lower, words, ref)
 	all = appendRelative(all, s, words, ref)
+	all = appendDuration(all, s, words)
 
 	if len(all) == 0 {
 		return nil
@@ -53,16 +55,17 @@ const (
 
 // appendNumeric matches ISO, dot, slash date formats and HH:MM(:SS) times.
 func appendNumeric(all []Result, s string, ref time.Time) []Result {
-	all = appendRegexDate(all, s, reISO, grpFirst, grpSecond, grpThird)   // YYYY-MM-DD
-	all = appendRegexDate(all, s, reDot, grpThird, grpSecond, grpFirst)   // DD.MM.YYYY
-	all = appendRegexDate(all, s, reSlash, grpThird, grpSecond, grpFirst) // DD/MM/YYYY
+	all = appendRegexDate(all, s, ref, reISO, grpFirst, grpSecond, grpThird)   // YYYY-MM-DD
+	all = appendRegexDate(all, s, ref, reDot, grpThird, grpSecond, grpFirst)   // DD.MM.YYYY
+	all = appendRegexDate(all, s, ref, reSlash, grpThird, grpSecond, grpFirst) // DD/MM/YYYY
 	all = appendTimeFmt(all, s, ref)
 	return all
 }
 
 // appendRegexDate extracts dates from s using re whose capture groups at
 // yearIdx, monthIdx, dayIdx (1-based) hold year, month, and day strings.
-func appendRegexDate(all []Result, s string, re *regexp.Regexp, yearIdx, monthIdx, dayIdx int) []Result {
+func appendRegexDate(all []Result, s string, ref time.Time, re *regexp.Regexp, yearIdx, monthIdx, dayIdx int) []Result {
+	loc := ref.Location()
 	for _, m := range re.FindAllStringSubmatchIndex(s, -1) {
 		yearStr := s[m[yearIdx*2]:m[yearIdx*2+1]]
 		monthStr := s[m[monthIdx*2]:m[monthIdx*2+1]]
@@ -73,7 +76,7 @@ func appendRegexDate(all []Result, s string, re *regexp.Regexp, yearIdx, monthId
 			continue
 		}
 
-		t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
+		t := time.Date(year, time.Month(month), day, 0, 0, 0, 0, loc)
 		all = append(all, Result{
 			Text:     s[m[0]:m[1]],
 			Start:    m[0],
@@ -111,7 +114,7 @@ func appendTimeFmt(all []Result, s string, ref time.Time) []Result {
 			explicit |= HasSecond
 		}
 
-		t := time.Date(ref.Year(), ref.Month(), ref.Day(), hour, mn, sec, 0, time.UTC)
+		t := time.Date(ref.Year(), ref.Month(), ref.Day(), hour, mn, sec, 0, ref.Location())
 		all = append(all, Result{
 			Text:     s[m[0]:m[1]],
 			Start:    m[0],
@@ -236,7 +239,7 @@ func appendText(all []Result, s, lower string, words []wordSpan, ref time.Time) 
 			day = 1
 		}
 
-		t := time.Date(year, mo, day, 0, 0, 0, 0, time.UTC)
+		t := time.Date(year, mo, day, 0, 0, 0, 0, ref.Location())
 		all = append(all, Result{
 			Text:     s[spanStart:spanEnd],
 			Start:    spanStart,
@@ -373,7 +376,7 @@ func appendSaatTime(all []Result, s string, words []wordSpan, used []bool, ref t
 		used[i] = true
 		used[i+1] = true
 
-		t := time.Date(ref.Year(), ref.Month(), ref.Day(), hour, 0, 0, 0, time.UTC)
+		t := time.Date(ref.Year(), ref.Month(), ref.Day(), hour, 0, 0, 0, ref.Location())
 		all = append(all, Result{
 			Text:     s[spanStart:spanEnd],
 			Start:    spanStart,
@@ -394,29 +397,39 @@ func appendSaatTime(all []Result, s string, words []wordSpan, used []bool, ref t
 func appendRelative(all []Result, s string, words []wordSpan, ref time.Time) []Result {
 	used := make([]bool, len(words))
 
-	// Pass 1: quantity-direction ("3 gün əvvəl", "2 həftə sonra")
+	// Pass 1: quantity-direction ("3 gün əvvəl", "iki saat sonra")
 	// Must run before keyword matching so "3 gün" isn't consumed as partial.
+	// Tries bare digit first, then numtext word-form numbers.
 	for i := range words {
-		if used[i] || i+2 >= len(words) {
+		if used[i] {
 			continue
 		}
 
-		qty, ok := parseBareNumber(words[i].lower)
+		// Try to parse a quantity: bare digit or numtext word-form.
+		qty, consumed, ok := parseQuantity(words, i)
 		if !ok || qty <= 0 {
 			continue
 		}
 
-		unit, ok := quantityUnits[words[i+1].lower]
+		unitIdx := i + consumed
+		if unitIdx >= len(words) {
+			continue
+		}
+		unit, ok := quantityUnits[words[unitIdx].lower]
 		if !ok {
 			continue
 		}
 
-		dir, ok := directionWords[words[i+2].lower]
+		dirIdx := unitIdx + 1
+		if dirIdx >= len(words) {
+			continue
+		}
+		dir, ok := directionWords[words[dirIdx].lower]
 		if !ok {
 			continue
 		}
 
-		t := applyQuantityOffset(ref, qty, unit, dir)
+		t := applyQuantityOffset(ref, int(qty), unit, dir)
 		explicit := HasYear | HasMonth | HasDay
 		typ := TypeDate
 		if unit == qtyHour || unit == qtyMinute || unit == qtySecond {
@@ -424,14 +437,14 @@ func appendRelative(all []Result, s string, words []wordSpan, ref time.Time) []R
 			typ = TypeDateTime
 		}
 
-		used[i] = true
-		used[i+1] = true
-		used[i+2] = true
+		for j := i; j <= dirIdx; j++ {
+			used[j] = true
+		}
 
 		all = append(all, Result{
-			Text:     s[words[i].start:words[i+2].end],
+			Text:     s[words[i].start:words[dirIdx].end],
 			Start:    words[i].start,
-			End:      words[i+2].end,
+			End:      words[dirIdx].end,
 			Type:     typ,
 			Time:     t,
 			Explicit: explicit,
@@ -483,7 +496,7 @@ func appendRelative(all []Result, s string, words []wordSpan, ref time.Time) []R
 				Start:    words[i].start,
 				End:      words[i+1].end,
 				Type:     TypeDate,
-				Time:     time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC),
+				Time:     time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, ref.Location()),
 				Explicit: HasYear | HasMonth | HasDay,
 			})
 		}
@@ -502,7 +515,7 @@ func appendRelative(all []Result, s string, words []wordSpan, ref time.Time) []R
 				Start:    words[i].start,
 				End:      words[i].end,
 				Type:     TypeDate,
-				Time:     time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC),
+				Time:     time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, ref.Location()),
 				Explicit: HasYear | HasMonth | HasDay,
 			})
 		}
@@ -662,7 +675,7 @@ func tryMerge(a, b Result, s string) (Result, bool) {
 	merged.Time = time.Date(
 		dateR.Time.Year(), dateR.Time.Month(), dateR.Time.Day(),
 		timeR.Time.Hour(), timeR.Time.Minute(), timeR.Time.Second(),
-		0, time.UTC,
+		0, dateR.Time.Location(),
 	)
 
 	return merged, true
@@ -674,6 +687,7 @@ func tryMerge(a, b Result, s string) (Result, bool) {
 // When skipToday is false, today is returned if it matches.
 // When skipToday is true (e.g. "gələn cümə" on a Friday), today is skipped.
 func nextWeekday(ref time.Time, wd time.Weekday, skipToday bool) time.Time {
+	loc := ref.Location()
 	days := int(wd) - int(ref.Weekday())
 	if days < 0 {
 		days += daysPerWeek
@@ -682,25 +696,27 @@ func nextWeekday(ref time.Time, wd time.Weekday, skipToday bool) time.Time {
 		if skipToday {
 			days = daysPerWeek
 		} else {
-			return time.Date(ref.Year(), ref.Month(), ref.Day(), 0, 0, 0, 0, time.UTC)
+			return time.Date(ref.Year(), ref.Month(), ref.Day(), 0, 0, 0, 0, loc)
 		}
 	}
 	t := ref.AddDate(0, 0, days)
-	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc)
 }
 
 // prevWeekday returns the most recent past occurrence of the given weekday before ref.
 func prevWeekday(ref time.Time, wd time.Weekday) time.Time {
+	loc := ref.Location()
 	days := int(ref.Weekday()) - int(wd)
 	if days <= 0 {
 		days += daysPerWeek
 	}
 	t := ref.AddDate(0, 0, -days)
-	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc)
 }
 
 // resolvePeriod computes the start of a period offset from ref.
 func resolvePeriod(ref time.Time, offset int, pk periodKind) time.Time {
+	loc := ref.Location()
 	switch pk {
 	case periodWeek:
 		// Go to Monday of the current week, then add offset weeks.
@@ -710,14 +726,14 @@ func resolvePeriod(ref time.Time, offset int, pk periodKind) time.Time {
 		}
 		monday := ref.AddDate(0, 0, -daysToMonday)
 		t := monday.AddDate(0, 0, offset*daysPerWeek)
-		return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+		return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, loc)
 
 	case periodMonth:
-		t := time.Date(ref.Year(), ref.Month(), 1, 0, 0, 0, 0, time.UTC)
+		t := time.Date(ref.Year(), ref.Month(), 1, 0, 0, 0, 0, loc)
 		return t.AddDate(0, offset, 0)
 
 	case periodYear:
-		return time.Date(ref.Year()+offset, time.January, 1, 0, 0, 0, 0, time.UTC)
+		return time.Date(ref.Year()+offset, time.January, 1, 0, 0, 0, 0, loc)
 
 	default:
 		return ref
@@ -747,6 +763,148 @@ func applyQuantityOffset(ref time.Time, qty int, unit qtyUnit, dir dirKind) time
 	default:
 		return ref
 	}
+}
+
+// ---------- duration parsing ----------
+
+// maxNumtextWords is the maximum number of consecutive words to try
+// when parsing a numtext word-form number (e.g. "yüz iyirmi bir" = 3 words).
+const maxNumtextWords = 5
+
+// maxDurationQty caps the quantity in a single duration segment to prevent
+// time.Duration overflow (int64 nanoseconds). 1 000 000 hours ≈ 114 years,
+// well within int64 range even when multiplied by time.Hour.
+const maxDurationQty = 1_000_000
+
+// durationUnits maps unit words to their time.Duration multiplier.
+var durationUnits = map[string]time.Duration{
+	"saat":   time.Hour,
+	"dəqiqə": time.Minute,
+	"saniyə": time.Second,
+}
+
+// appendDuration matches standalone duration expressions like "2 saat 30 dəqiqə".
+// A duration is a sequence of <quantity> <unit> pairs WITHOUT a direction word (əvvəl/sonra).
+// If a direction word follows, it's a relative expression handled by appendRelative.
+func appendDuration(all []Result, s string, words []wordSpan) []Result {
+	used := make([]bool, len(words))
+
+	for i := 0; i < len(words); {
+		if used[i] {
+			i++
+			continue
+		}
+
+		// Try to parse a quantity at position i.
+		qty, consumed, ok := parseQuantity(words, i)
+		if !ok || qty <= 0 {
+			i++
+			continue
+		}
+
+		unitIdx := i + consumed
+		if unitIdx >= len(words) {
+			i++
+			continue
+		}
+
+		mul, ok := durationUnits[words[unitIdx].lower]
+		if !ok {
+			i++
+			continue
+		}
+
+		// Check that NO direction word follows the unit — that would be relative, not duration.
+		dirIdx := unitIdx + 1
+		if dirIdx < len(words) {
+			if _, isDir := directionWords[words[dirIdx].lower]; isDir {
+				i++
+				continue
+			}
+		}
+
+		// We have at least one <qty> <unit> pair. Greedily consume more pairs.
+		if qty > maxDurationQty {
+			qty = maxDurationQty
+		}
+		dur := time.Duration(qty) * mul
+		spanStart := words[i].start
+		spanEnd := words[unitIdx].end
+
+		for j := i; j <= unitIdx; j++ {
+			used[j] = true
+		}
+
+		// Try to extend: look for more <qty> <unit> pairs.
+		pos := unitIdx + 1
+		for pos < len(words) {
+			nQty, nConsumed, nOk := parseQuantity(words, pos)
+			if !nOk || nQty <= 0 {
+				break
+			}
+			nUnitIdx := pos + nConsumed
+			if nUnitIdx >= len(words) {
+				break
+			}
+			nMul, nOk := durationUnits[words[nUnitIdx].lower]
+			if !nOk {
+				break
+			}
+			if nQty > maxDurationQty {
+				nQty = maxDurationQty
+			}
+			dur += time.Duration(nQty) * nMul
+			spanEnd = words[nUnitIdx].end
+			for j := pos; j <= nUnitIdx; j++ {
+				used[j] = true
+			}
+			pos = nUnitIdx + 1
+		}
+
+		all = append(all, Result{
+			Text:     s[spanStart:spanEnd],
+			Start:    spanStart,
+			End:      spanEnd,
+			Type:     TypeDuration,
+			Duration: dur,
+		})
+
+		i = pos
+	}
+
+	return all
+}
+
+// parseQuantity tries to parse a quantity starting at words[idx].
+// Returns (value, wordsConsumed, ok). Tries bare digit first, then numtext.
+func parseQuantity(words []wordSpan, idx int) (int64, int, bool) {
+	// Try bare digit first (fast path).
+	if n, ok := parseBareNumber(words[idx].lower); ok {
+		return int64(n), 1, true
+	}
+	// Try numtext word-form number (greedy: longest match first).
+	return tryParseNumtext(words, idx)
+}
+
+// tryParseNumtext attempts to parse consecutive words starting at idx
+// as an Azerbaijani number. Returns (value, wordsConsumed, ok).
+func tryParseNumtext(words []wordSpan, idx int) (int64, int, bool) {
+	maxN := min(len(words)-idx, maxNumtextWords)
+	for n := maxN; n >= 1; n-- {
+		// Build candidate string from words[idx:idx+n].
+		var b strings.Builder
+		for j := 0; j < n; j++ {
+			if j > 0 {
+				b.WriteByte(' ')
+			}
+			b.WriteString(words[idx+j].lower)
+		}
+		val, err := numtext.Parse(b.String())
+		if err == nil && val > 0 {
+			return val, n, true
+		}
+	}
+	return 0, 0, false
 }
 
 // ---------- word scanning helpers ----------

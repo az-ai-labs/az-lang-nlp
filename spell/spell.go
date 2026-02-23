@@ -90,7 +90,7 @@ func IsCorrect(word string) bool {
 
 	// Apostrophe handling: validate only the pre-apostrophe stem.
 	for i, r := range lower {
-		if i > 0 && isApostrophe(r) && i < len(lower)-1 {
+		if i > 0 && azcase.IsApostrophe(r) && i < len(lower)-1 {
 			return IsCorrect(lower[:i])
 		}
 	}
@@ -272,12 +272,6 @@ func Correct(text string) string {
 	}
 
 	return sb.String()
-}
-
-// isApostrophe reports whether r is an apostrophe character
-// (ASCII apostrophe, right single quote, or modifier letter apostrophe).
-func isApostrophe(r rune) bool {
-	return r == '\'' || r == '\u2019' || r == '\u02BC'
 }
 
 // suffixSurface concatenates the surface forms of all morphemes in an analysis,

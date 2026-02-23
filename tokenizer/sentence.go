@@ -4,6 +4,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 // abbreviations maps common Azerbaijani abbreviations (lowercase, with trailing dot)
@@ -160,7 +162,7 @@ func isAbbreviation(s string, dotPos int) bool {
 		return false
 	}
 
-	lower := strings.ToLower(word)
+	lower := azcase.ToLower(word)
 	candidate := lower + "."
 
 	// Special case: "və s." — if the word is "s" and the previous word is "və",
@@ -209,7 +211,7 @@ func greedyAbbreviation(s, prefix string, pos int) bool {
 	}
 
 	// We have a potential extension: prefix + nextWord + "."
-	nextWord := strings.ToLower(s[pos:j])
+	nextWord := azcase.ToLower(s[pos:j])
 	extended := prefix + nextWord + "."
 
 	if abbreviations[extended] {

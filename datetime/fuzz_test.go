@@ -76,7 +76,7 @@ func FuzzExtract(f *testing.F) {
 			}
 
 			// Type must be valid.
-			if r.Type < TypeDate || r.Type > TypeDateTime {
+			if r.Type < TypeDate || r.Type > TypeDuration {
 				t.Errorf("invalid type: %d", r.Type)
 			}
 

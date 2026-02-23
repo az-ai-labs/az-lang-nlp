@@ -103,3 +103,6 @@ jobs:
 
       - name: Fuzz validate
         run: go test ./validate/ -fuzz=FuzzValidate -fuzztime=10s -parallel=1
+
+      - name: Fuzz sentiment
+        run: go test ./sentiment/ -fuzz=FuzzAnalyze -fuzztime=10s -parallel=1

@@ -256,10 +256,10 @@ var productiveTags = map[MorphTag]bool{
 	DerivPriv:      true,
 	DerivPoss:      true,
 	DerivVerb:      true,
-	VoicePass:      true,
-	VoiceReflex:    true,
-	VoiceRecip:     true,
-	VoiceCaus:      true,
+	// Voice suffixes are excluded: they are derivational and create new
+	// lexical items (danış "speak" ≠ dan "dawn" + -ış). When the whole
+	// word is a known dictionary stem, the whole-word interpretation wins.
+	// Inflected voice forms (danışır, yazılır) are handled by Pass 1.
 }
 
 // String returns the name of the morpheme tag.
@@ -402,6 +402,7 @@ func Stem(word string) string {
 	if word == "" || len(word) > maxWordBytes {
 		return word
 	}
+	word = azcase.ComposeNFC(word)
 
 	// Handle hyphens: split, stem each part, rejoin
 	if idx := strings.Index(word, "-"); idx > 0 && idx < len(word)-1 {
@@ -478,6 +479,7 @@ func Analyze(word string) []Analysis {
 	if len(word) > maxWordBytes {
 		return []Analysis{{Stem: word}}
 	}
+	word = azcase.ComposeNFC(word)
 
 	results := analyze(word)
 	// Always include bare-stem interpretation.

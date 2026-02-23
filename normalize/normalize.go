@@ -28,12 +28,18 @@ package normalize
 import (
 	"strings"
 
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 	"github.com/az-ai-labs/az-lang-nlp/tokenizer"
 )
 
 // maxInputBytes is the maximum input size for Normalize.
 // Inputs exceeding this are returned unchanged.
 const maxInputBytes = 1 << 20 // 1 MiB
+
+// maxHyphenParts is the maximum number of segments a hyphenated word may have.
+// Words split into more parts than this are returned unchanged to avoid
+// processing pathological inputs.
+const maxHyphenParts = 8
 
 // Normalize restores missing Azerbaijani diacritics in text.
 // Tokenizes the input, restores each word independently, and reassembles.
@@ -43,6 +49,7 @@ func Normalize(s string) string {
 	if s == "" || len(s) > maxInputBytes {
 		return s
 	}
+	s = azcase.ComposeNFC(s)
 
 	tokens := tokenizer.WordTokens(s)
 	if len(tokens) == 0 {
@@ -69,6 +76,7 @@ func NormalizeWord(word string) string {
 	if word == "" || len(word) > maxWordBytes {
 		return word
 	}
+	word = azcase.ComposeNFC(word)
 	return restoreWordToken(word)
 }
 
@@ -82,7 +90,7 @@ func restoreWordToken(word string) string {
 
 	// Handle apostrophe suffixes: restore the stem part only.
 	for i, r := range word {
-		if i > 0 && isApostrophe(r) && i < len(word)-1 {
+		if i > 0 && azcase.IsApostrophe(r) && i < len(word)-1 {
 			stem := word[:i]
 			suffix := word[i:]
 			return restoreWord(stem) + suffix
@@ -93,18 +101,16 @@ func restoreWordToken(word string) string {
 }
 
 // restoreHyphenated splits on hyphens, restores each part, and rejoins.
+// Words with more than maxHyphenParts segments are returned unchanged.
 func restoreHyphenated(word string) string {
 	parts := strings.Split(word, "-")
+	if len(parts) <= 1 || len(parts) > maxHyphenParts {
+		return word
+	}
 	for i, part := range parts {
 		if part != "" {
 			parts[i] = restoreWord(part)
 		}
 	}
 	return strings.Join(parts, "-")
-}
-
-// isApostrophe reports whether r is an apostrophe character
-// (ASCII apostrophe, right single quote, or modifier letter apostrophe).
-func isApostrophe(r rune) bool {
-	return r == '\'' || r == '\u2019' || r == '\u02BC'
 }
