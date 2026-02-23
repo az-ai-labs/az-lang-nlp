@@ -25,6 +25,7 @@ All packages are safe for concurrent use.
 | [keywords](#keyword-extraction)  | Keyword extraction (TF-IDF / TextRank)                  |
 | [validate](#text-validation)     | Text quality validation (spelling, punctuation, layout) |
 | [sentiment](#sentiment-analysis) | Lexicon-based sentiment analysis                        |
+| [chunker](#text-chunking)        | Text chunking for RAG/LLM pipelines                    |
 
 ## Install
 
@@ -327,6 +328,37 @@ sentiment.IsPositive("Həyat gözəldir")
 ```
 
 Uses an embedded sentiment lexicon with ~200 Azerbaijani stems. Words are normalized and stemmed before lookup, so inflected forms ("gözəldir", "sevirdim") match their stem entries. Returns a score from -1.0 (most negative) to +1.0 (most positive). Unknown words are skipped. Input longer than 1 MiB returns a zero result.
+
+## Text Chunking
+
+Split text into overlapping or non-overlapping chunks for RAG/LLM pipelines.
+
+```go
+// Convenience: split with defaults (size=512, overlap=50)
+chunker.Chunks("Birinci paraqraf.\n\nİkinci paraqraf.")
+// [Birinci paraqraf.\n\n İkinci paraqraf.]
+
+// Fixed-size rune-count splitting
+for _, c := range chunker.BySize("abcdefghij", 5, 0) {
+    fmt.Printf("[%d:%d] %q\n", c.Start, c.End, c.Text)
+}
+// [0:5] "abcde"
+// [5:10] "fghij"
+
+// Sentence-aware splitting
+chunks := chunker.BySentence("Birinci cümlə. İkinci cümlə.", 100, 0)
+fmt.Println(chunks[0].Text)
+// Birinci cümlə. İkinci cümlə.
+
+// Recursive: paragraph > sentence > word > rune with merge-back
+for _, c := range chunker.Recursive("Birinci paraqraf.\n\nİkinci paraqraf.", 20, 0) {
+    fmt.Printf("[%d:%d] %q\n", c.Start, c.End, c.Text)
+}
+// [0:19] "Birinci paraqraf.\n\n"
+// [19:36] "İkinci paraqraf."
+```
+
+Three strategies: `BySize` (pure rune-count), `BySentence` (sentence-boundary aware via tokenizer), and `Recursive` (hierarchical paragraph/sentence/word/rune with greedy merge-back). All return `[]Chunk` with byte offsets satisfying `text[c.Start:c.End] == c.Text`. Chunk size is measured in runes, not bytes, for correct handling of Azerbaijani multi-byte diacritics. Inherits abbreviation handling from the tokenizer.
 
 ## License
 

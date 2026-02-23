@@ -73,10 +73,13 @@ func Normalize(s string) string {
 // NormalizeWord restores diacritics on a single word.
 // Returns the input unchanged if the word is unknown or ambiguous.
 func NormalizeWord(word string) string {
-	if word == "" || len(word) > maxWordBytes {
+	if word == "" {
 		return word
 	}
 	word = azcase.ComposeNFC(word)
+	if len(word) > maxWordBytes {
+		return word
+	}
 	return restoreWordToken(word)
 }
 

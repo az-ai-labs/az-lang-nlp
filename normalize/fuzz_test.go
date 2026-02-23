@@ -1,6 +1,10 @@
 package normalize
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+)
 
 func FuzzNormalize(f *testing.F) {
 	f.Add("gozel soz")
@@ -51,10 +55,13 @@ func FuzzNormalizeWord(f *testing.F) {
 			t.Errorf("not idempotent:\ninput:  %q\nfirst:  %q\nsecond: %q", word, result, second)
 		}
 
-		// Rune count must be preserved (diacritics replace 1 rune with 1 rune).
-		if len([]rune(result)) != len([]rune(word)) {
-			t.Errorf("rune count changed:\ninput:  %q (runes=%d)\noutput: %q (runes=%d)",
-				word, len([]rune(word)), result, len([]rune(result)))
+		// Rune count must be preserved after NFC composition
+		// (diacritics replace 1 rune with 1 rune, but NFC may merge
+		// base + combining mark into a single precomposed rune).
+		nfcWord := azcase.ComposeNFC(word)
+		if len([]rune(result)) != len([]rune(nfcWord)) {
+			t.Errorf("rune count changed:\ninput:  %q (nfc runes=%d)\noutput: %q (runes=%d)",
+				word, len([]rune(nfcWord)), result, len([]rune(result)))
 		}
 	})
 }
