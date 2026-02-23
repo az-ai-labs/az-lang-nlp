@@ -8,6 +8,10 @@ import (
 
 const maxDepth = 10
 
+// maxAnalyses caps the total analyses the walker accumulates.
+// Prevents exponential exploration on pathological inputs.
+const maxAnalyses = 128
+
 // walker holds the state for a single backtracking morphological analysis run.
 type walker struct {
 	origRunes  []rune     // original-cased word as runes
@@ -123,6 +127,10 @@ func analyze(word string) []Analysis {
 // state is the expected toState of the next suffix to strip (going right-to-left).
 // When state == initial, we've traced back to the stem boundary.
 func (w *walker) walk(pos int, state fsmState, morphemes []Morpheme, depth int) {
+	if len(w.results) >= maxAnalyses {
+		return
+	}
+
 	// Base case: traced back to initial → check stem validity.
 	if state == initial {
 		if pos > 0 && isValidStem(string(w.lowerRunes[:pos])) {
