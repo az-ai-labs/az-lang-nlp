@@ -1,0 +1,102 @@
+[
+  {
+    "name": "positive_great_app",
+    "input": "Bu proqram çox gözəldir, çox xoşuma gəldi",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "positive_helpful_service",
+    "input": "Bu xidmət çox faydalıdır, hər gün istifadə edirəm",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "positive_fast_quality",
+    "input": "Proqram çox sürətli işləyir və keyfiyyəti yaxşıdır",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "positive_recommend",
+    "input": "Hamıya tövsiyə edirəm, çox rahat və yaxşı proqramdır",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "positive_excellent_update",
+    "input": "Son yeniləmə əladır, interfeys mükəmməl oldu",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "positive_love_features",
+    "input": "Bu proqramın funksiyaları möhtəşəmdir, çox sevirəm",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "negative_bad_app",
+    "input": "Pis proqramdır, heç xoşuma gəlmir",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "negative_slow_buggy",
+    "input": "Proqram çox yavaş işləyir, hər dəfə xəta verir",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "negative_waste_time",
+    "input": "Vaxt itkisidir, bu proqrama pul xərcləmək zərərlidir",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "negative_terrible_experience",
+    "input": "Dəhşətli təcrübə idi, bir daha istifadə etmərəm",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "negative_hate_crashes",
+    "input": "Bu proqramdan nifrət edirəm, hər dəfə çöküb bağlanır",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "negative_disappointing",
+    "input": "Çox pis və darıxdırıcı proqramdır, məyus oldum",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "neutral_factual_statement",
+    "input": "Bakı Azərbaycanın paytaxtıdır",
+    "want_sentiment": "Neutral"
+  },
+  {
+    "name": "neutral_numbers_only",
+    "input": "12345, 67890.",
+    "want_sentiment": "Neutral"
+  },
+  {
+    "name": "edge_negation_positive",
+    "input": "Pis deyil, istifadə etmək olar",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  },
+  {
+    "name": "edge_negation_negative",
+    "input": "Yaxşı deyil, çox pis oldu",
+    "want_sentiment": "Negative",
+    "want_score_positive": false
+  },
+  {
+    "name": "edge_mixed_sentiment",
+    "input": "Dizayn gözəldir amma işləməsi çox pisdir",
+    "want_sentiment": "Positive",
+    "want_score_positive": true
+  }
+]

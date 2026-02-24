@@ -451,3 +451,34 @@ zəhlə	-0.6
 heyif	-0.55
 təəssüf	-0.55
 darıx	-0.5
+
+# --- Data-driven additions (v3, from 71K app-store reviews) ---
+# Selected from buildlexicon.go candidates: LLR >= 10.83, manually reviewed.
+
+# Negative words — improving negative recall (was 0.27)
+heç	-0.3
+reklam	-0.5
+sıfır	-0.7
+bez	-0.65
+fırıldaq	-0.7
+bəsdir	-0.85
+bəhanə	-0.85
+haram	-0.7
+tulla	-0.8
+dəyməz	-0.5
+pox	-0.7
+məcbur	-0.5
+cəhənnəm	-0.9
+güya	-0.7
+narazı	-0.6
+səhv	-0.45
+ləğv	-0.4
+imtina	-0.35
+düşm	-0.7
+açılm	-0.5
+yaram	-0.75
+
+# Positive words
+zor	0.8
+inşallah	0.6
+tez	0.35

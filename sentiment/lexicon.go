@@ -12,6 +12,9 @@ import (
 	"github.com/az-ai-labs/az-lang-nlp/tokenizer"
 )
 
+// negationWord is the Azerbaijani copula used to negate predicates.
+const negationWord = "deyil"
+
 // lexicon maps stems to sentiment scores, built once at init.
 var lexicon map[string]float64
 
@@ -73,7 +76,7 @@ func analyze(text string) Result {
 		stem := stems[i]
 
 		// Skip the negation word itself.
-		if stem == "deyil" {
+		if stem == negationWord {
 			continue
 		}
 
@@ -131,7 +134,7 @@ func followedByNeg(stems []string, idx int) bool {
 		if stems[j] == "" {
 			continue
 		}
-		return stems[j] == "deyil"
+		return stems[j] == negationWord
 	}
 	return false
 }
