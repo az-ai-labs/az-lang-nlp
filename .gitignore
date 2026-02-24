@@ -46,5 +46,6 @@ BACKLOG.md
 *.pdf
 .planning/*
 data/*.txt
+data/*.log
 ROADMAP.md
 az_data/*
