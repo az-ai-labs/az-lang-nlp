@@ -5122,5 +5122,108 @@
     "sentences": [
       "bir​ikinci"
     ]
+  },
+  {
+    "name": "news_economy",
+    "input": "Azərbaycan Mərkəzi Bankı uçot dərəcəsini 7.25%-ə endirdi.",
+    "words": [
+      "Azərbaycan",
+      "Mərkəzi",
+      "Bankı",
+      "uçot",
+      "dərəcəsini",
+      "ə",
+      "endirdi"
+    ],
+    "sentences": [
+      "Azərbaycan Mərkəzi Bankı uçot dərəcəsini 7.25%-ə endirdi."
+    ]
+  },
+  {
+    "name": "news_politics",
+    "input": "Prezident İlham Əliyev Türkiyə Prezidenti R.T. Ərdoğan ilə görüşüb.",
+    "words": [
+      "Prezident",
+      "İlham",
+      "Əliyev",
+      "Türkiyə",
+      "Prezidenti",
+      "R",
+      "T",
+      "Ərdoğan",
+      "ilə",
+      "görüşüb"
+    ],
+    "sentences": [
+      "Prezident İlham Əliyev Türkiyə Prezidenti R.T.",
+      " Ərdoğan ilə görüşüb."
+    ]
+  },
+  {
+    "name": "news_sports",
+    "input": "Qarabağ FK Çempionlar Liqasında 2:1 hesabı ilə qalib gəldi.",
+    "words": [
+      "Qarabağ",
+      "FK",
+      "Çempionlar",
+      "Liqasında",
+      "hesabı",
+      "ilə",
+      "qalib",
+      "gəldi"
+    ],
+    "sentences": [
+      "Qarabağ FK Çempionlar Liqasında 2:1 hesabı ilə qalib gəldi."
+    ]
+  },
+  {
+    "name": "banking_transfer",
+    "input": "Köçürmə məbləği 1500.00 AZN təşkil edir. Komissiya 0.5% tutulur.",
+    "words": [
+      "Köçürmə",
+      "məbləği",
+      "AZN",
+      "təşkil",
+      "edir",
+      "Komissiya",
+      "tutulur"
+    ],
+    "sentences": [
+      "Köçürmə məbləği 1500.00 AZN təşkil edir.",
+      " Komissiya 0.5% tutulur."
+    ]
+  },
+  {
+    "name": "banking_loan",
+    "input": "İpoteka krediti üzrə illik faiz dərəcəsi 4%-dən 6%-ə qaldırıldı.",
+    "words": [
+      "İpoteka",
+      "krediti",
+      "üzrə",
+      "illik",
+      "faiz",
+      "dərəcəsi",
+      "dən",
+      "ə",
+      "qaldırıldı"
+    ],
+    "sentences": [
+      "İpoteka krediti üzrə illik faiz dərəcəsi 4%-dən 6%-ə qaldırıldı."
+    ]
+  },
+  {
+    "name": "social_media_mixed",
+    "input": "Bu restoran super idi👍 Mütləq gedin!",
+    "words": [
+      "Bu",
+      "restoran",
+      "super",
+      "idi",
+      "Mütləq",
+      "gedin"
+    ],
+    "sentences": [
+      "Bu restoran super idi👍 Mütləq gedin!"
+    ]
   }
 ]

@@ -160,5 +160,65 @@
     "name": "no_entities",
     "input": "Bu sadə cümlə, heç bir entity yoxdur.",
     "entities": null
+  },
+  {
+    "name": "banking_iban_multiple",
+    "input": "Göndərən: AZ21NABZ00000000137010001944, alan: AZ77AIIB38060019441234567890",
+    "entities": [
+      {
+        "text": "AZ21NABZ00000000137010001944",
+        "start": 13,
+        "end": 41,
+        "type": "IBAN",
+        "labeled": false
+      },
+      {
+        "text": "AZ77AIIB38060019441234567890",
+        "start": 49,
+        "end": 77,
+        "type": "IBAN",
+        "labeled": false
+      }
+    ]
+  },
+  {
+    "name": "banking_voen_in_invoice",
+    "input": "Müştəri VÖEN: 1400025311, FIN: 7HKPQR3",
+    "entities": [
+      {
+        "text": "1400025311",
+        "start": 18,
+        "end": 28,
+        "type": "VOEN",
+        "labeled": true
+      },
+      {
+        "text": "7HKPQR3",
+        "start": 35,
+        "end": 42,
+        "type": "FIN",
+        "labeled": true
+      }
+    ]
+  },
+  {
+    "name": "news_contact_info",
+    "input": "Əlaqə üçün: +994124975000, email: press@azertag.az",
+    "entities": [
+      {
+        "text": "+994124975000",
+        "start": 17,
+        "end": 30,
+        "type": "Phone",
+        "labeled": false
+      },
+      {
+        "text": "press@azertag.az",
+        "start": 39,
+        "end": 55,
+        "type": "Email",
+        "labeled": false
+      }
+    ]
   }
 ]

@@ -82,5 +82,26 @@
     "want_lang": "Russian",
     "want_script": "Cyrl",
     "want_code": "ru"
+  },
+  {
+    "name": "azerbaijani_news_headline",
+    "input": "Neft qiymətləri dünya bazarlarında kəskin şəkildə artıb",
+    "want_lang": "Azerbaijani",
+    "want_script": "Latn",
+    "want_code": "az"
+  },
+  {
+    "name": "azerbaijani_banking_text",
+    "input": "Kredit müqaviləsi üzrə aylıq ödənişlərin cədvəli aşağıda göstərilmişdir",
+    "want_lang": "Azerbaijani",
+    "want_script": "Latn",
+    "want_code": "az"
+  },
+  {
+    "name": "turkish_similar_to_az",
+    "input": "Bugün hava çok güzel, parkta yürüyüş yapmaya karar verdik",
+    "want_lang": "English",
+    "want_script": "Latn",
+    "want_code": "en"
   }
 ]

@@ -138,5 +138,26 @@
     "want_word": "gozel, soz!",
     "want_text": "gözəl, söz!",
     "word_only": false
+  },
+  {
+    "name": "news_ascii_to_az",
+    "input": "Azerbaycan iqtisadiyyati inkisaf edir",
+    "want_word": "Azerbaycan iqtisadiyyati inkisaf edir",
+    "want_text": "Azərbaycan iqtisadiyyati inkişaf edir",
+    "word_only": false
+  },
+  {
+    "name": "banking_ascii_kredit",
+    "input": "Kredit muqavilesi uzre odenisler",
+    "want_word": "Kredit muqavilesi uzre odenisler",
+    "want_text": "Kredit muqavilesi üzrə odenisler",
+    "word_only": false
+  },
+  {
+    "name": "social_mixed_case",
+    "input": "GOZEL GUNDU BUGUN",
+    "want_word": "GOZEL GUNDU BUGUN",
+    "want_text": "GÖZƏL GUNDU BUGÜN",
+    "word_only": false
   }
 ]

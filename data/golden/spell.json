@@ -150,5 +150,37 @@
     "want_correct_word": "Bu ketab gozeldir",
     "want_correct_text": "Bu kitab gözəldir",
     "word_only": false
+  },
+  {
+    "name": "news_misspelled_iqtisadiyyat",
+    "input": "iqtisadiyat",
+    "want_is_correct": false,
+    "want_correct_word": "iqtisadiyyat",
+    "want_correct_text": "iqtisadiyyat",
+    "word_only": true
+  },
+  {
+    "name": "banking_correct_kredit",
+    "input": "kredit",
+    "want_is_correct": true,
+    "want_correct_word": "kredit",
+    "want_correct_text": "kredit",
+    "word_only": true
+  },
+  {
+    "name": "fulltext_banking_sentence",
+    "input": "Kreditin fazi deyismedi",
+    "want_is_correct": false,
+    "want_correct_word": "Kreditin fazi deyismedi",
+    "want_correct_text": "Kreditin faiz deyişmədi",
+    "word_only": false
+  },
+  {
+    "name": "news_fulltext_correct",
+    "input": "Prezident fərman imzaladı",
+    "want_is_correct": false,
+    "want_correct_word": "Prezident fərman imzaladı",
+    "want_correct_text": "Prezident fərman imzaladı",
+    "word_only": false
   }
 ]
