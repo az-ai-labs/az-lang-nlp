@@ -13,7 +13,6 @@ Writes cleaned output to:
 Cleaning steps applied:
     1. Deduplicate by content (keep first occurrence across both splits)
     2. Drop rows where len(content.strip()) < 10
-    3. Remove texts that appear with multiple different scores (ambiguous sentiment)
 """
 
 import sys
@@ -47,7 +46,7 @@ def read_arrow(path: Path) -> list[dict]:
 
 
 def clean(records: list[dict]) -> list[dict]:
-    """Apply deduplication, length filter, and ambiguous-score removal."""
+    """Apply deduplication and length filter."""
     # Drop rows with None content, then deduplicate — keep first occurrence
     seen_content: set[str] = set()
     deduped = []
@@ -60,16 +59,7 @@ def clean(records: list[dict]) -> list[dict]:
             deduped.append(row)
 
     # Drop short content
-    length_filtered = [r for r in deduped if len(r["content"].strip()) >= MIN_CONTENT_LEN]
-
-    # Find texts that map to more than one score
-    content_scores: dict[str, set] = defaultdict(set)
-    for row in length_filtered:
-        content_scores[row["content"]].add(row["score"])
-    ambiguous = {c for c, scores in content_scores.items() if len(scores) > 1}
-
-    cleaned = [r for r in length_filtered if r["content"] not in ambiguous]
-    return cleaned
+    return [r for r in deduped if len(r["content"].strip()) >= MIN_CONTENT_LEN]
 
 
 def main() -> None:
