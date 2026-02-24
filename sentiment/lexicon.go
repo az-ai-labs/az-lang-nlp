@@ -1,25 +1,22 @@
 package sentiment
 
 import (
-	_ "embed"
 	"strconv"
 	"strings"
 	"unicode"
 
+	"github.com/az-ai-labs/az-lang-nlp/data"
 	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 	"github.com/az-ai-labs/az-lang-nlp/morph"
 	"github.com/az-ai-labs/az-lang-nlp/normalize"
 	"github.com/az-ai-labs/az-lang-nlp/tokenizer"
 )
 
-//go:embed lexicon.txt
-var lexiconRaw string
-
 // lexicon maps stems to sentiment scores, built once at init.
 var lexicon map[string]float64
 
 func init() {
-	lexicon = parseLexicon(lexiconRaw)
+	lexicon = parseLexicon(data.SentimentLexicon)
 }
 
 // parseLexicon parses tab-separated "stem\tscore" lines.

@@ -2,13 +2,11 @@ package keywords
 
 import (
 	"bytes"
-	_ "embed"
 	"math"
 	"strconv"
-)
 
-//go:embed freq.txt
-var freqRaw []byte
+	"github.com/az-ai-labs/az-lang-nlp/data"
+)
 
 // Corpus frequency data (populated in init, read-only after).
 var (
@@ -19,7 +17,7 @@ var (
 const maxCandidates = 10000 // internal processing cap on unique stems
 
 func init() {
-	lines := bytes.Split(freqRaw, []byte("\n"))
+	lines := bytes.Split(data.KeywordsFreq, []byte("\n"))
 	corpusFreq = make(map[string]int64, len(lines))
 
 	for _, line := range lines {

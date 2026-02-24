@@ -2,11 +2,11 @@ package spell
 
 import (
 	"bytes"
-	_ "embed"
 	"hash/fnv"
 	"strconv"
 	"unicode/utf8"
 
+	"github.com/az-ai-labs/az-lang-nlp/data"
 	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
@@ -20,9 +20,6 @@ const (
 	maxHyphenParts  = 8       // maximum hyphen-separated parts to check independently
 )
 
-//go:embed freq.txt
-var freqRaw []byte
-
 // Core SymSpell index (populated in init, read-only after).
 var (
 	words      map[string]int64    // word -> frequency
@@ -32,7 +29,7 @@ var (
 )
 
 func init() {
-	lines := bytes.Split(freqRaw, []byte("\n"))
+	lines := bytes.Split(data.SpellFreq, []byte("\n"))
 	words = make(map[string]int64, len(lines))
 	wordList = make([]string, 0, len(lines))
 	deletes = make(map[uint32][]uint32, len(lines)*deletesPerWord)

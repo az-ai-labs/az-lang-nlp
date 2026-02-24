@@ -2,11 +2,9 @@ package morph
 
 import (
 	"bytes"
-	_ "embed"
-)
 
-//go:embed dict.txt
-var dictRaw []byte
+	"github.com/az-ai-labs/az-lang-nlp/data"
+)
 
 // minLineLen is the minimum valid line length in dict.txt:
 // one byte for the POS tag plus at least one character for the lemma.
@@ -22,7 +20,7 @@ func init() {
 	// Parse dictRaw: each line is <POS_byte><lemma>\n
 	// These lookups are for soft ranking in fsm.go walk() base case,
 	// not as hard filters — an unknown stem does not block analysis.
-	lines := bytes.Split(dictRaw, []byte("\n"))
+	lines := bytes.Split(data.MorphDict, []byte("\n"))
 	dictMap = make(map[string]byte, len(lines))
 	dictLemmas = make([]string, 0, len(lines))
 	for _, line := range lines {

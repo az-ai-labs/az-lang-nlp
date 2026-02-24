@@ -1,4 +1,4 @@
-// Command dictgen generates morph/dict.txt from kaikki.org Azerbaijani
+// Command dictgen generates data/dict.txt from kaikki.org Azerbaijani
 // dictionary dump (JSONL format).
 //
 // Download the dump from https://kaikki.org/dictionary/Azerbaijani/
@@ -6,7 +6,7 @@
 //
 //	go run ./cmd/dictgen -input kaikki.org-dictionary-Azerbaijani.jsonl
 //
-// Output: morph/dict.txt (commit this file). Regenerate when a new
+// Output: data/dict.txt (commit this file). Regenerate when a new
 // Wiktionary dump is available.
 package main
 
@@ -25,7 +25,7 @@ import (
 
 const (
 	defaultInput   = "data/dictionary/kaikki.org-dictionary-Azerbaijani.jsonl"
-	defaultOutput  = "morph/dict.txt"
+	defaultOutput  = "data/dict.txt"
 	scannerBufSize = 1 << 20 // 1 MB
 	minLemmaRunes  = 2
 )

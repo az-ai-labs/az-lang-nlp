@@ -1,12 +1,12 @@
 //go:build ignore
 
-// buildfreq generates spell/freq.txt — a word frequency dictionary for the
+// buildfreq generates data/spell_freq.txt — a word frequency dictionary for the
 // Azerbaijani spell checker. Run from the project root:
 //
 //	go run scripts/buildfreq.go
 //
 // Output format: one entry per line, "word frequency\n", sorted descending by frequency.
-// All stems from morph/dict.txt are guaranteed at least frequency 1.
+// All stems from data/dict.txt are guaranteed at least frequency 1.
 // Inflected (non-stem) forms are included only when frequency >= 50.
 package main
 
@@ -23,10 +23,10 @@ import (
 )
 
 const (
-	morphDictPath    = "morph/dict.txt"
+	morphDictPath    = "data/dict.txt"
 	corpusAzPath     = "data/corpus/az-corpus/sentences.txt"
 	corpusWikiPath   = "data/corpus/azwiki/articles.txt"
-	outputPath       = "spell/freq.txt"
+	outputPath       = "data/spell_freq.txt"
 	inflectedMinFreq = 50
 	scannerBufSize   = 4 * 1024 * 1024 // 4 MB — handles very long lines
 )
@@ -97,7 +97,7 @@ func main() {
 	log.Printf("wrote %d entries to %s", len(entries), outputPath)
 }
 
-// loadMorphStems reads morph/dict.txt and returns a set of lowercased stems.
+// loadMorphStems reads data/dict.txt and returns a set of lowercased stems.
 // Each line has a single POS byte prefix followed by the lemma.
 func loadMorphStems(path string) (map[string]bool, error) {
 	f, err := os.Open(path)
