@@ -1,6 +1,7 @@
 package normalize
 
 import (
+	"fmt"
 	"strings"
 	"sync"
 	"testing"
@@ -336,4 +337,22 @@ func BenchmarkNormalizeLarge(b *testing.B) {
 	for b.Loop() {
 		Normalize(input)
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Examples
+// ---------------------------------------------------------------------------
+
+func ExampleNormalize() {
+	fmt.Println(Normalize("gozel soz"))
+	// Output:
+	// gözəl söz
+}
+
+func ExampleNormalizeWord() {
+	fmt.Println(NormalizeWord("gozel"))
+	fmt.Println(NormalizeWord("seher"))
+	// Output:
+	// gözəl
+	// seher
 }

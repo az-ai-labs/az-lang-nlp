@@ -1388,3 +1388,11 @@ func ExampleStems() {
 	// Output:
 	// [kitab ev gəl]
 }
+
+func ExampleIsKnownStem() {
+	fmt.Println(IsKnownStem("kitab"))
+	fmt.Println(IsKnownStem("xyzzy"))
+	// Output:
+	// true
+	// false
+}

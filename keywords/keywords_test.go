@@ -440,3 +440,14 @@ func ExampleKeywords() {
 	// Output:
 	// [iqtisadiyyat sürət azərbaycan inkişaf]
 }
+
+func ExampleExtractTextRank() {
+	kws := ExtractTextRank("Azərbaycan iqtisadiyyatı sürətlə inkişaf edir. Azərbaycan neft sektorunda liderdir.", 3)
+	for _, kw := range kws {
+		fmt.Printf("%s (count=%d)\n", kw.Stem, kw.Count)
+	}
+	// Output:
+	// azərbaycan (count=2)
+	// neft (count=1)
+	// inkişaf (count=1)
+}

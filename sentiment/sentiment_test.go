@@ -2,6 +2,7 @@ package sentiment
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -231,4 +232,31 @@ func BenchmarkAnalyze(b *testing.B) {
 	for b.Loop() {
 		Analyze(text)
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Examples
+// ---------------------------------------------------------------------------
+
+func ExampleAnalyze() {
+	r := Analyze("Bu film çox gözəl və maraqlı idi")
+	fmt.Println(r.Sentiment)
+	fmt.Println(r.Positive > 0)
+	// Output:
+	// Positive
+	// true
+}
+
+func ExampleScore() {
+	fmt.Println(Score("Bu çox gözəl bir gündür") > 0)
+	// Output:
+	// true
+}
+
+func ExampleIsPositive() {
+	fmt.Println(IsPositive("Gözəl və maraqlı"))
+	fmt.Println(IsPositive("Pis və çirkin"))
+	// Output:
+	// true
+	// false
 }

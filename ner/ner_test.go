@@ -2,6 +2,7 @@ package ner
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -453,4 +454,60 @@ func assertStrings(t *testing.T, label string, got, want []string) {
 			t.Errorf("%s[%d]: got %q, want %q", label, i, got[i], want[i])
 		}
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Examples
+// ---------------------------------------------------------------------------
+
+func ExampleRecognize() {
+	entities := Recognize("FIN: 5ARPXK2, tel +994501234567")
+	for _, e := range entities {
+		fmt.Printf("%s: %s\n", e.Type, e.Text)
+	}
+	// Output:
+	// FIN: 5ARPXK2
+	// Phone: +994501234567
+}
+
+func ExamplePhones() {
+	fmt.Println(Phones("+994501234567 və 0551234567"))
+	// Output:
+	// [+994501234567 0551234567]
+}
+
+func ExampleEmails() {
+	fmt.Println(Emails("Yazın: info@example.com"))
+	// Output:
+	// [info@example.com]
+}
+
+func ExampleFINs() {
+	fmt.Println(FINs("FIN: 5ARPXK2"))
+	// Output:
+	// [5ARPXK2]
+}
+
+func ExampleVOENs() {
+	fmt.Println(VOENs("VOEN: 1234567890"))
+	// Output:
+	// [1234567890]
+}
+
+func ExampleIBANs() {
+	fmt.Println(IBANs("Hesab: AZ21NABZ00000000137010001944"))
+	// Output:
+	// [AZ21NABZ00000000137010001944]
+}
+
+func ExampleLicensePlates() {
+	fmt.Println(LicensePlates("90-BZ-456 nömrəli avtomobil"))
+	// Output:
+	// [90-BZ-456]
+}
+
+func ExampleURLs() {
+	fmt.Println(URLs("Sayt: https://gov.az/services"))
+	// Output:
+	// [https://gov.az/services]
 }
