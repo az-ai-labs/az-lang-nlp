@@ -384,3 +384,13 @@ func ExampleBySentence() {
 	// Output:
 	// [0:33] "Birinci cümlə. İkinci cümlə."
 }
+
+func ExampleRecursive() {
+	chunks := Recursive("Birinci paraqraf.\n\nİkinci paraqraf.", 20, 0)
+	for _, c := range chunks {
+		fmt.Printf("[%d:%d] %q\n", c.Start, c.End, c.Text)
+	}
+	// Output:
+	// [0:19] "Birinci paraqraf.\n\n"
+	// [19:36] "İkinci paraqraf."
+}
