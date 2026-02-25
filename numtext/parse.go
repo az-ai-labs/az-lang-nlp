@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 )
 
 // wordValues maps each Azerbaijani cardinal word to its numeric value.

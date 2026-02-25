@@ -5,7 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 )
 
 // abbreviations maps common Azerbaijani abbreviations (lowercase, with trailing dot)

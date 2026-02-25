@@ -3,7 +3,7 @@ package normalize
 import (
 	"testing"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 )
 
 func FuzzNormalize(f *testing.F) {
