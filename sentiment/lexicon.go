@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 	"github.com/az-ai-labs/az-lang-nlp/data"
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 	"github.com/az-ai-labs/az-lang-nlp/morph"
 	"github.com/az-ai-labs/az-lang-nlp/normalize"
 	"github.com/az-ai-labs/az-lang-nlp/tokenizer"

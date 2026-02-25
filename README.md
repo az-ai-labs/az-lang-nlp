@@ -11,21 +11,21 @@ All packages are safe for concurrent use.
 
 ## Packages
 
-| Package                          | Description                                             |
-| -------------------------------- | ------------------------------------------------------- |
-| [translit](#transliteration)     | Latin / Cyrillic script conversion                      |
-| [tokenizer](#tokenizer)          | Word and sentence tokenization with byte offsets        |
-| [morph](#morphological-analysis) | Stem and suffix chain decomposition                     |
-| [numtext](#number-to-text)       | Number / text conversion ("123" &rarr; "yuz iyirmi uc") |
-| [ner](#named-entity-recognition) | FIN, VOEN, phone, email, IBAN, plate, URL extraction    |
-| [datetime](#datetime)            | Date/time parser ("5 mart 2026" &rarr; structured)      |
-| [normalize](#text-normalization) | Diacritic restoration ("gozel" &rarr; "g&ouml;z&auml;l")            |
-| [spell](#spell-checker)          | Spell checking (SymSpell algorithm)                     |
-| [detect](#language-detection)    | Language detection (az/ru/en/tr)                        |
-| [keywords](#keyword-extraction)  | Keyword extraction (TF-IDF / TextRank)                  |
-| [validate](#text-validation)     | Text quality validation (spelling, punctuation, layout) |
-| [sentiment](#sentiment-analysis) | Lexicon-based sentiment analysis                        |
-| [chunker](#text-chunking)        | Text chunking for RAG/LLM pipelines                    |
+| Package                          | Description                                              |
+| -------------------------------- | -------------------------------------------------------- |
+| [translit](#transliteration)     | Latin / Cyrillic script conversion                       |
+| [tokenizer](#tokenizer)          | Word and sentence tokenization with byte offsets         |
+| [morph](#morphological-analysis) | Stem and suffix chain decomposition                      |
+| [numtext](#number-to-text)       | Number / text conversion ("123" &rarr; "yuz iyirmi uc")  |
+| [ner](#named-entity-recognition) | FIN, VOEN, phone, email, IBAN, plate, URL extraction     |
+| [datetime](#datetime)            | Date/time parser ("5 mart 2026" &rarr; structured)       |
+| [normalize](#text-normalization) | Diacritic restoration ("gozel" &rarr; "g&ouml;z&auml;l") |
+| [spell](#spell-checker)          | Spell checking (SymSpell algorithm)                      |
+| [detect](#language-detection)    | Language detection (az/ru/en/tr)                         |
+| [keywords](#keyword-extraction)  | Keyword extraction (TF-IDF / TextRank)                   |
+| [validate](#text-validation)     | Text quality validation (spelling, punctuation, layout)  |
+| [sentiment](#sentiment-analysis) | Lexicon-based sentiment analysis                         |
+| [chunker](#text-chunking)        | Text chunking for RAG/LLM pipelines                      |
 
 ## Install
 
@@ -34,6 +34,17 @@ go get github.com/az-ai-labs/az-lang-nlp
 ```
 
 Requires Go 1.25.7 or later.
+
+## gRPC
+
+Proto definitions and generated client stubs are available in a separate package:
+
+```
+go get github.com/az-ai-labs/az-lang-nlp-grpc
+```
+
+13 services, 28 RPCs covering all packages above.
+See [az-lang-nlp-grpc](https://github.com/az-ai-labs/az-lang-nlp-grpc) for details.
 
 ## Transliteration
 

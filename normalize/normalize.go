@@ -28,7 +28,7 @@ package normalize
 import (
 	"strings"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 	"github.com/az-ai-labs/az-lang-nlp/tokenizer"
 )
 

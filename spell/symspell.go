@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"unicode/utf8"
 
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 	"github.com/az-ai-labs/az-lang-nlp/data"
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
 )
 
 const (

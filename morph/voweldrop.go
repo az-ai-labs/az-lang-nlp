@@ -8,7 +8,7 @@
 // returned to the caller.
 package morph
 
-import "github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+import "github.com/az-ai-labs/az-lang-nlp/azcase"
 
 // minRestoreLen is the minimum number of runes in a stem for vowel drop
 // restoration to be attempted. A contracted stem must have at least a vowel

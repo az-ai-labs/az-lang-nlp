@@ -3,7 +3,7 @@ package morph
 import (
 	"unicode/utf8"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 )
 
 // backVowels contains Azerbaijani back vowels (both cases).

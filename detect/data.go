@@ -5,7 +5,7 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 )
 
 // isCyrillic reports whether r is a Cyrillic letter (Unicode block U+0400..U+04FF).

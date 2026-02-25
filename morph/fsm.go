@@ -3,7 +3,7 @@ package morph
 import (
 	"sort"
 
-	"github.com/az-ai-labs/az-lang-nlp/internal/azcase"
+	"github.com/az-ai-labs/az-lang-nlp/azcase"
 )
 
 const maxDepth = 10
